@@ -1,7 +1,3 @@
-import 'dart:ffi';
-
-import 'package:shared_preferences/shared_preferences.dart';
-
 int n1Stage = 5;
 int n2Stage = 50;
 int n3Stage = 70;

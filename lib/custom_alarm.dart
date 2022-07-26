@@ -1,14 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
+import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:sleeperly/alarm_list.dart';
 import 'package:sleeperly/services/notification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
-
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
 import 'package:sleeperly/Themes/theme_time.dart';
 import 'dart:developer' as developer;
-
 import 'package:shared_preferences/shared_preferences.dart';
 
 var random = new Random();
@@ -26,6 +27,17 @@ class CustomAlarm extends StatelessWidget {
       required this.switchSelected,
       required this.randomSelected})
       : super(key: key);
+
+  // static Future<void> callback() async {
+  //   developer.log('Alarm fired!');
+  //   await FlutterRingtonePlayer.play(
+  //     android: AndroidSounds.alarm,
+  //     ios: IosSounds.alarm,
+  //   );
+  //   tz.initializeTimeZones();
+  //   NotificationService()
+  //       .showNotification2(1, 'OneTIme', 'oneShot', 2, 'Remix', 'sds');
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -138,21 +150,76 @@ class CustomAlarm extends StatelessWidget {
                     int hour1;
                     listRandom.add(randomNum.toString());
                     prefs.setStringList('random', listRandom);
-                    if (listTime[0][6] == 'P' || listTime[0][5] == 'P') {
-                      hour1 = int.parse(listTime[0].split(':')[0]) + 12;
+                    if (listTime[listSwitch.length - 1][6] == 'P' ||
+                        listTime[listSwitch.length - 1][5] == 'P') {
+                      if (int.parse(
+                              listTime[listSwitch.length - 1].split(':')[0]) ==
+                          12) {
+                        hour1 = int.parse(
+                            listTime[listSwitch.length - 1].split(':')[0]);
+                      } else {
+                        hour1 = int.parse(
+                                listTime[listSwitch.length - 1].split(':')[0]) +
+                            12;
+                      }
                     } else {
-                      hour1 = int.parse(listTime[0].split(':')[0]);
+                      if (int.parse(
+                              listTime[listSwitch.length - 1].split(':')[0]) ==
+                          12) {
+                        hour1 = 0;
+                      } else {
+                        hour1 = int.parse(
+                            listTime[listSwitch.length - 1].split(':')[0]);
+                      }
                     }
+                    print("randomNum: $randomNum");
+
+                    // await AndroidAlarmManager.oneShot(
+                    //   const Duration(seconds: 5),
+                    //   // Ensure we have a unique alarm ID.
+                    //   1,
+                    //   callback,
+                    //   exact: true,
+                    //   wakeup: true,
+                    // );
+                    // AndroidAlarmManager.periodic(
+                    //     const Duration(seconds: 60), 1, callback,
+                    //     startAt: DateTime(
+                    //         DateTime.now().year,
+                    //         DateTime.now().month,
+                    //         hour1,
+                    //         listTime[0][2] != ':'
+                    //             ? int.parse((listTime[listSwitch.length - 1]
+                    //                     [2] +
+                    //                 listTime[listSwitch.length - 1][3]))
+                    //             : int.parse((listTime[listSwitch.length - 1]
+                    //                     [3]) +
+                    //                 (listTime[listSwitch.length - 1][4])),
+                    //         0),
+                    //     exact: true,
+                    //     wakeup: true);
+                    print(listSwitch.length - 1);
+                    print(hour1);
+
+                    listTime[0][2] != ':'
+                        ? print(int.parse((listTime[listSwitch.length - 1][2] +
+                            listTime[listSwitch.length - 1][3])))
+                        : print(int.parse((listTime[listSwitch.length - 1][3]) +
+                            (listTime[listSwitch.length - 1][4])));
+
                     NotificationService().showNotification(
                         randomNum,
                         'Hello',
                         "Hello World",
                         hour1,
-                        listTime[0][2] != ':'
-                            ? int.parse((listTime[0][2] + listTime[0][3]))
-                            : int.parse((listTime[0][3]) + (listTime[0][4])),
+                        listTime[listSwitch.length - 1][2] != ':'
+                            ? int.parse((listTime[listSwitch.length - 1][2] +
+                                listTime[listSwitch.length - 1][3]))
+                            : int.parse((listTime[listSwitch.length - 1][3]) +
+                                (listTime[listSwitch.length - 1][4])),
+                        0,
                         'Wake Up',
-                        'New Alarm');
+                        '$randomNum');
                   }
                 }),
           ),

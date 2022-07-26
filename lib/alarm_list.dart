@@ -1,3 +1,5 @@
+import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
+import 'package:sleeperly/custom_alarm.dart';
 import 'package:sleeperly/services/notification_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'dart:convert';
@@ -73,6 +75,38 @@ class _AlarmListState extends State<AlarmList> {
       }
 
       return values;
+    }
+
+    int getDay(int index) {
+      int i = 0;
+      for (var element in finalDaysMaps[index].values) {
+        i++;
+        if (element) {
+          if (finalDaysMaps[index].keys.elementAt(i) == 'Monday') {
+            return 1;
+          }
+          if (finalDaysMaps[index].keys.elementAt(i) == 'Tuesday') {
+            return 2;
+          }
+
+          if (finalDaysMaps[index].keys.elementAt(i) == 'Wednesday') {
+            return 3;
+          }
+          if (finalDaysMaps[index].keys.elementAt(i) == 'Thursday') {
+            return 4;
+          }
+          if (finalDaysMaps[index].keys.elementAt(i) == 'Friday') {
+            return 5;
+          }
+          if (finalDaysMaps[index].keys.elementAt(i) == 'Saturday') {
+            return 6;
+          }
+          if (finalDaysMaps[index].keys.elementAt(i) == 'Sunday') {
+            return 7;
+          }
+        }
+      }
+      return 1;
     }
 
     String getRingtones(int index) {
@@ -201,8 +235,19 @@ class _AlarmListState extends State<AlarmList> {
 
                           if (widget.time[index][6] == 'P' ||
                               widget.time[index][5] == 'P') {
-                            hour = int.parse(widget.time[index].split(':')[0]) +
-                                12;
+                            if (int.parse(widget.time[index].split(':')[0]) ==
+                                12) {
+                              hour =
+                                  int.parse(widget.time[index].split(':')[0]);
+                            } else {
+                              if (int.parse(widget.time[index].split(':')[0]) ==
+                                  12) {
+                                hour = 0;
+                              } else {
+                                hour =
+                                    int.parse(widget.time[index].split(':')[0]);
+                              }
+                            }
                           } else {
                             hour = int.parse(widget.time[index].split(':')[0]);
                           }
@@ -216,8 +261,9 @@ class _AlarmListState extends State<AlarmList> {
                                       widget.time[index][3]))
                                   : int.parse((widget.time[index][3]) +
                                       (widget.time[index][4])),
+                              5,
                               'Wake Up',
-                              'New Alarm');
+                              '$index');
                         },
                       ),
                     );
@@ -287,7 +333,7 @@ class _AlarmListState extends State<AlarmList> {
                     ScaffoldMessenger.of(context).showSnackBar(snackbar);
                   },
                   child: SizedBox(
-                    height: 140,
+                    height: 145,
                     child: InkWell(
                       splashColor: Colors.white,
                       onTap: () {
@@ -350,22 +396,35 @@ class _AlarmListState extends State<AlarmList> {
                                     if (!value) {
                                       NotificationService().cancelNotification(
                                           int.parse(widget.randomId[index]));
+                                      // AndroidAlarmManager.cancel(1);
                                     } else {
                                       if (widget.time[index][6] == 'P' ||
                                           widget.time[index][5] == 'P') {
-                                        hour = int.parse(widget.time[index]
-                                                .split(':')[0]) +
-                                            12;
+                                        if (int.parse(widget.time[index]
+                                                .split(':')[0]) ==
+                                            12) {
+                                          hour = int.parse(
+                                              widget.time[index].split(':')[0]);
+                                        } else {
+                                          hour = int.parse(widget.time[index]
+                                                  .split(':')[0]) +
+                                              12;
+                                        }
                                       } else {
-                                        hour = int.parse(
-                                            widget.time[index].split(':')[0]);
+                                        if (int.parse(widget.time[index]
+                                                .split(':')[0]) ==
+                                            12) {
+                                          hour = 0;
+                                        } else {
+                                          hour = int.parse(
+                                              widget.time[index].split(':')[0]);
+                                        }
                                       }
                                       NotificationService().showNotification(
                                           int.parse(widget.randomId[index]),
                                           'Hello',
                                           "Hello World",
-                                          int.parse(
-                                              widget.time[index].split(':')[0]),
+                                          hour,
                                           widget.time[index][2] != ':'
                                               ? int.parse((widget.time[index]
                                                       [2] +
@@ -373,6 +432,7 @@ class _AlarmListState extends State<AlarmList> {
                                               : int.parse((widget.time[index]
                                                       [3]) +
                                                   (widget.time[index][4])),
+                                          getDay(index),
                                           'Wake Up',
                                           'New Alarm');
                                     }

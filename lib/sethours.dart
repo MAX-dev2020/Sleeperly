@@ -21,7 +21,7 @@ class _SetHoursState extends State<SetHours> {
 
   _loadsetHours(int setHours) async {
     final prefs = await SharedPreferences.getInstance();
-    prefs.setInt('sethours ', setHours);
+    prefs.setInt('sethours', setHours);
   }
 
   List<bool> _isOpen = [false, false, false, false, false, false, false, false];

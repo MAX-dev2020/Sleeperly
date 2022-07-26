@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
 
@@ -37,31 +38,33 @@ class NotificationService {
     await flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
-  tz.TZDateTime _nextInstance(int hour, int minutes) {
-    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+  tz.TZDateTime _nextInstance(int hour, int minutes, String? timeZone) {
+    final tz.TZDateTime now = tz.TZDateTime.now(tz.getLocation(timeZone!));
     tz.TZDateTime scheduleDate = tz.TZDateTime(
-      tz.local,
-      now.year,
-      now.month,
-      now.day,
-      hour,
-      minutes,
-    );
+        tz.getLocation(timeZone), now.year, now.month, now.day, hour, minutes);
 
-    if (scheduleDate.isBefore(now)) {
-      scheduleDate = scheduleDate.add(const Duration(days: 1));
-    }
-    print(scheduleDate);
+    // if (scheduleDate.isBefore(now)) {
+    //   scheduleDate = scheduleDate.add(const Duration(days: 1));
+    // }
     return scheduleDate;
   }
 
-  // tz.TZDateTime _nextInstanceOfMondayTenAM(int hour, int minutes, int day) {
-  //   tz.TZDateTime scheduledDate = _nextInstance(hour, minutes);
-  //   while (scheduledDate.weekday != day) {
-  //     scheduledDate = scheduledDate.add(const Duration(days: 1));
-  //   }
-  //   return scheduledDate;
-  // }
+  tz.TZDateTime _nextInstanceOfDayWeek(
+      int hour, int minutes, int day, String? timeZone) {
+    tz.TZDateTime scheduledDate = _nextInstance(hour, minutes, timeZone);
+    if (day != 0) {
+      while (scheduledDate.weekday != day) {
+        scheduledDate = scheduledDate.add(const Duration(days: 1));
+      }
+    } else {
+      final tz.TZDateTime now = tz.TZDateTime.now(tz.getLocation(timeZone!));
+      if (scheduledDate.isBefore(now)) {
+        scheduledDate = scheduledDate.add(const Duration(days: 1));
+      }
+    }
+    print(scheduledDate);
+    return scheduledDate;
+  }
 
   Future<void> showNotification(
     int id,
@@ -69,19 +72,68 @@ class NotificationService {
     String body,
     int hour,
     int minutes,
+    int day,
     String ringtone,
     String channelId,
   ) async {
+    final String? timeZoneName = await FlutterNativeTimezone.getLocalTimezone();
+
     await flutterLocalNotificationsPlugin.zonedSchedule(
       id,
       title,
       body,
-      _nextInstance(hour, minutes),
+      _nextInstanceOfDayWeek(hour, minutes, day, timeZoneName),
 
       NotificationDetails(
         // Android details
         android: AndroidNotificationDetails(
           channelId, 'Main Channel',
+          channelDescription: "Monish",
+          importance: Importance.max,
+          priority: Priority.max,
+          fullScreenIntent: true,
+          icon: '@drawable/ic_stat_sleeping',
+          color: Colors.black,
+          // sound: RawResourceAndroidNotificationSound(ringtone)
+        ),
+
+        // iOS details
+        iOS: const IOSNotificationDetails(
+          sound: 'default.wav',
+          presentAlert: true,
+          presentBadge: true,
+          presentSound: true,
+        ),
+      ),
+
+      // Type of time interpretation
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+      androidAllowWhileIdle: true,
+      // To show notification even when the app is closed
+      matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
+    );
+  }
+
+  Future<void> showNotification2(
+    int id,
+    String title,
+    String body,
+    int hour,
+    String ringtone,
+    String channelId,
+  ) async {
+    print(hour);
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+      id,
+      title,
+      body,
+      tz.TZDateTime.now(tz.local).add(Duration(seconds: hour)),
+
+      NotificationDetails(
+        // Android details
+        android: AndroidNotificationDetails(
+          channelId, 'Main Channel2',
           channelDescription: "Monish",
           importance: Importance.max,
           priority: Priority.max,
@@ -110,25 +162,25 @@ class NotificationService {
     );
   }
 
-  Future<void> showNotification2(
+  Future<void> showNotification3(
     int id,
     String title,
     String body,
-    int hour,
+    int seconds,
     String ringtone,
     String channelId,
   ) async {
-    print(hour);
+    print(seconds);
     await flutterLocalNotificationsPlugin.zonedSchedule(
       id,
       title,
       body,
-      tz.TZDateTime.now(tz.local).add(Duration(seconds: hour)),
+      tz.TZDateTime.now(tz.local).add(Duration(seconds: 5)),
 
       NotificationDetails(
         // Android details
         android: AndroidNotificationDetails(
-          channelId, 'Main Channel',
+          channelId, 'Main Channel3',
           channelDescription: "Monish",
           importance: Importance.max,
           priority: Priority.max,
