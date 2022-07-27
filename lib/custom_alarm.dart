@@ -19,7 +19,7 @@ class CustomAlarm extends StatelessWidget {
   List<String> time;
   List<String> days;
   List<String> switchSelected;
-  List<String> randomSelected;
+  String randomSelected;
   CustomAlarm(
       {Key? key,
       required this.time,
@@ -47,8 +47,8 @@ class CustomAlarm extends StatelessWidget {
     List<String> listRingtone = [];
     List<String> listSwitch = switchSelected;
     List<String> listTime = [];
-    List<String> listRandom = randomSelected;
-    int randomNum;
+    String listRandom = randomSelected;
+    List<List<int>> randomNum = [];
     _loaddays() async {
       final prefs = await SharedPreferences.getInstance();
       List<String> convdays = prefs.getStringList('days') ?? [];
@@ -68,6 +68,11 @@ class CustomAlarm extends StatelessWidget {
     _loadSwitch() async {
       final prefs = await SharedPreferences.getInstance();
       listSwitch = prefs.getStringList('switch') ?? [];
+    }
+
+    _loadRandom() async {
+      final prefs = await SharedPreferences.getInstance();
+      listRandom = prefs.getString('random') ?? '';
     }
 
     TimeOfDay selectedtime = TimeOfDay.now();
@@ -138,18 +143,26 @@ class CustomAlarm extends StatelessWidget {
                     listSwitch.add('true');
                     prefs.setStringList('switch', listSwitch);
 
-                    listRandom = prefs.getStringList('random') ?? [];
-                    randomNum = random.nextInt(100);
+                    listRandom = prefs.getString('random') ?? '';
+                    List randomList = [];
+                    randomList = jsonDecode(listRandom);
+                    int num = random.nextInt(100);
+                    randomList.add(num);
+
                     while (true) {
-                      if (listRandom.contains(randomNum.toString())) {
-                        randomNum = random.nextInt(100);
+                      if (randomList.contains(num) && randomList.isNotEmpty) {
+                        randomList[randomList.length - 1] = random.nextInt(100);
                       } else {
                         break;
                       }
                     }
+
+                    randomNum.add([num]);
+
                     int hour1;
-                    listRandom.add(randomNum.toString());
-                    prefs.setStringList('random', listRandom);
+                    print(randomNum);
+                    prefs.setString('random', jsonEncode(randomNum));
+
                     if (listTime[listSwitch.length - 1][6] == 'P' ||
                         listTime[listSwitch.length - 1][5] == 'P') {
                       if (int.parse(
@@ -208,7 +221,7 @@ class CustomAlarm extends StatelessWidget {
                             (listTime[listSwitch.length - 1][4])));
 
                     NotificationService().showNotification(
-                        randomNum,
+                        randomList[randomList.length - 1],
                         'Hello',
                         "Hello World",
                         hour1,
@@ -233,13 +246,15 @@ class CustomAlarm extends StatelessWidget {
           _loadtime();
           _loadRingtone();
           _loadSwitch();
+          _loadRandom();
+
           streams.sink.add(time);
           return AlarmList(
             time: time,
             days: listdays,
             ringtone: listRingtone,
             switchSelected: listSwitch,
-            randomId: listRandom,
+            randomId: jsonEncode(randomNum),
           );
         },
       ),

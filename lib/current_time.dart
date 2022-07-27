@@ -26,7 +26,7 @@ class _CurrentTimeState extends State<CurrentTime> {
   List<String> listDays = [];
   List<String> ringtone = [];
   List<String> switchSelected = [];
-  List<String> randomId = [];
+  String randomId = '';
   int random = 1;
   int setHours = 0;
   @override
@@ -67,7 +67,7 @@ class _CurrentTimeState extends State<CurrentTime> {
 
   _loadRandomId() async {
     final prefs = await SharedPreferences.getInstance();
-    randomId = prefs.getStringList('random') ?? [];
+    randomId = prefs.getString('random') ?? '';
     // prefs.clear();
   }
 
