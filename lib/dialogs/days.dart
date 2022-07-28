@@ -30,6 +30,15 @@ class _DaysDialogState extends State<DaysDialog> {
     return widget.mapdays[widget.index][day];
   }
 
+  bool checkAllFalse(int index) {
+    for (var element in widget.mapdays[index].values) {
+      if (element) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
     AlertDialog daysDialog = AlertDialog(
@@ -46,6 +55,9 @@ class _DaysDialogState extends State<DaysDialog> {
                 onChanged: (value) {
                   setState(() {
                     widget.mapdays[widget.index]['Never'] = value;
+                    if (value == false) {
+                      widget.mapdays[widget.index]['Never'] = true;
+                    }
                     widget.mapdays[widget.index]['EveryDay'] = false;
                     widget.mapdays[widget.index]['Sunday'] = false;
                     widget.mapdays[widget.index]['Monday'] = false;
@@ -70,7 +82,12 @@ class _DaysDialogState extends State<DaysDialog> {
                     widget.mapdays[widget.index]['Thursday'] = value;
                     widget.mapdays[widget.index]['Friday'] = value;
                     widget.mapdays[widget.index]['Saturday'] = value;
-                    widget.mapdays[widget.index]['Never'] = false;
+                    if (checkAllFalse(widget.index)) {
+                      widget.mapdays[widget.index]['Never'] = true;
+                    } else {
+                      widget.mapdays[widget.index]['Never'] = false;
+                    }
+
                     _setIndex(widget.mapdays);
                   });
                 }),
@@ -81,7 +98,11 @@ class _DaysDialogState extends State<DaysDialog> {
                   setState(() {
                     widget.mapdays[widget.index]['Sunday'] = value;
                     widget.mapdays[widget.index]['EveryDay'] = false;
-                    widget.mapdays[widget.index]['Never'] = false;
+                    if (checkAllFalse(widget.index)) {
+                      widget.mapdays[widget.index]['Never'] = true;
+                    } else {
+                      widget.mapdays[widget.index]['Never'] = false;
+                    }
                     _setIndex(widget.mapdays);
                   });
                 }),
@@ -92,7 +113,11 @@ class _DaysDialogState extends State<DaysDialog> {
                 setState(() {
                   widget.mapdays[widget.index]['Monday'] = value;
                   widget.mapdays[widget.index]['EveryDay'] = false;
-                  widget.mapdays[widget.index]['Never'] = false;
+                  if (checkAllFalse(widget.index)) {
+                    widget.mapdays[widget.index]['Never'] = true;
+                  } else {
+                    widget.mapdays[widget.index]['Never'] = false;
+                  }
                   _setIndex(widget.mapdays);
                 });
               },
@@ -104,7 +129,11 @@ class _DaysDialogState extends State<DaysDialog> {
                 setState(() {
                   widget.mapdays[widget.index]['Tuesday'] = value;
                   widget.mapdays[widget.index]['EveryDay'] = false;
-                  widget.mapdays[widget.index]['Never'] = false;
+                  if (checkAllFalse(widget.index)) {
+                    widget.mapdays[widget.index]['Never'] = true;
+                  } else {
+                    widget.mapdays[widget.index]['Never'] = false;
+                  }
                   _setIndex(widget.mapdays);
                 });
               },
@@ -116,7 +145,11 @@ class _DaysDialogState extends State<DaysDialog> {
                 setState(() {
                   widget.mapdays[widget.index]['Wednesday'] = value;
                   widget.mapdays[widget.index]['EveryDay'] = false;
-                  widget.mapdays[widget.index]['Never'] = false;
+                  if (checkAllFalse(widget.index)) {
+                    widget.mapdays[widget.index]['Never'] = true;
+                  } else {
+                    widget.mapdays[widget.index]['Never'] = false;
+                  }
                   _setIndex(widget.mapdays);
                 });
               },
@@ -128,7 +161,11 @@ class _DaysDialogState extends State<DaysDialog> {
                 setState(() {
                   widget.mapdays[widget.index]['Thursday'] = value;
                   widget.mapdays[widget.index]['EveryDay'] = false;
-                  widget.mapdays[widget.index]['Never'] = false;
+                  if (checkAllFalse(widget.index)) {
+                    widget.mapdays[widget.index]['Never'] = true;
+                  } else {
+                    widget.mapdays[widget.index]['Never'] = false;
+                  }
                   _setIndex(widget.mapdays);
                 });
               },
@@ -140,7 +177,11 @@ class _DaysDialogState extends State<DaysDialog> {
                 setState(() {
                   widget.mapdays[widget.index]['Friday'] = value;
                   widget.mapdays[widget.index]['EveryDay'] = false;
-                  widget.mapdays[widget.index]['Never'] = false;
+                  if (checkAllFalse(widget.index)) {
+                    widget.mapdays[widget.index]['Never'] = true;
+                  } else {
+                    widget.mapdays[widget.index]['Never'] = false;
+                  }
                   _setIndex(widget.mapdays);
                 });
               },
@@ -152,7 +193,11 @@ class _DaysDialogState extends State<DaysDialog> {
                 setState(() {
                   widget.mapdays[widget.index]['Saturday'] = value;
                   widget.mapdays[widget.index]['EveryDay'] = false;
-                  widget.mapdays[widget.index]['Never'] = false;
+                  if (checkAllFalse(widget.index)) {
+                    widget.mapdays[widget.index]['Never'] = true;
+                  } else {
+                    widget.mapdays[widget.index]['Never'] = false;
+                  }
                   _setIndex(widget.mapdays);
                 });
               },
