@@ -87,14 +87,16 @@ class NotificationService {
       NotificationDetails(
         // Android details
         android: AndroidNotificationDetails(
-          channelId, 'Main Channel',
+          channelId,
+          'Main Channel',
           channelDescription: "Monish",
           importance: Importance.max,
           priority: Priority.max,
           fullScreenIntent: true,
           icon: '@drawable/ic_stat_sleeping',
           color: Colors.black,
-          // sound: RawResourceAndroidNotificationSound(ringtone)
+          playSound: true,
+          sound: RawResourceAndroidNotificationSound(ringtone),
         ),
 
         // iOS details
@@ -113,6 +115,14 @@ class NotificationService {
       // To show notification even when the app is closed
       matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
     );
+    // AndroidNotificationDetails androidPlatformChannelSpecifics =
+    //     AndroidNotificationDetails(channelId, 'Main Channel',
+    //         channelDescription: 'repeating description');
+    // NotificationDetails platformChannelSpecifics =
+    //     NotificationDetails(android: androidPlatformChannelSpecifics);
+    // await flutterLocalNotificationsPlugin.periodicallyShow(0, 'repeating title',
+    //     'repeating body', RepeatInterval.everyMinute, platformChannelSpecifics,
+    //     androidAllowWhileIdle: true);
   }
 
   Future<void> showNotification2(
@@ -120,6 +130,7 @@ class NotificationService {
     String title,
     String body,
     int hour,
+    int minutes,
     String ringtone,
     String channelId,
   ) async {
@@ -128,21 +139,18 @@ class NotificationService {
       id,
       title,
       body,
-      tz.TZDateTime.now(tz.local).add(Duration(seconds: hour)),
+      tz.TZDateTime.now(tz.local).add(Duration(hours: hour, minutes: minutes)),
 
       NotificationDetails(
         // Android details
-        android: AndroidNotificationDetails(
-          channelId, 'Main Channel2',
-          channelDescription: "Monish",
-          importance: Importance.max,
-          priority: Priority.max,
-          fullScreenIntent: true,
-          icon: '@drawable/ic_stat_sleeping',
-          color: Colors.black,
-
-          // sound: RawResourceAndroidNotificationSound(ringtone)
-        ),
+        android: AndroidNotificationDetails(channelId, 'Main Channel2',
+            channelDescription: "Monish",
+            importance: Importance.max,
+            priority: Priority.max,
+            fullScreenIntent: true,
+            icon: '@drawable/ic_stat_sleeping',
+            color: Colors.black,
+            sound: RawResourceAndroidNotificationSound(ringtone)),
 
         // iOS details
         iOS: const IOSNotificationDetails(

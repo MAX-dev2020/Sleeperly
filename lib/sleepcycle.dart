@@ -5,8 +5,8 @@ int n4Stage = 90;
 
 sleepCycle(setTime) {
   DateTime all = DateTime.now();
-  int currHour = 21;
-  int currMinute = 43;
+  int currHour = DateTime.now().hour;
+  int currMinute = DateTime.now().minute;
 
   double setHours = 0;
   int setMinutes = 0;

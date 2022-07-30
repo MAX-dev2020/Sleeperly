@@ -81,7 +81,8 @@ class _CurrentTimeState extends State<CurrentTime> {
   final StreamController<TimeOfDay> streams = StreamController<TimeOfDay>();
   bool shadow = false;
   TimeOfDay selectedTime = TimeOfDay.now();
-
+  AssetImage background = const AssetImage('images/movesun2.gif');
+  AssetImage background2 = const AssetImage('images/movemoon2.gif');
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -105,6 +106,7 @@ class _CurrentTimeState extends State<CurrentTime> {
                   builder: (context, snapshot) {
                     streams.sink.add(TimeOfDay.now());
                     String time = snapshot.data.toString();
+
                     if (!snapshot.hasData) {
                       return const Text("Loading.....");
                     }
@@ -128,7 +130,23 @@ class _CurrentTimeState extends State<CurrentTime> {
                     );
                   }),
               Container(
-                margin: const EdgeInsets.only(top: 200.0),
+                width: 200,
+                height: 200,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: Colors.white,
+                  image: DecorationImage(
+                    image: int.parse(
+                                TimeOfDay.now().toString().substring(10, 11)) <
+                            19
+                        ? background
+                        : background2,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              Container(
+                margin: const EdgeInsets.only(top: 50.0),
                 width: 200,
                 height: 50,
                 child: ElevatedButton(
@@ -163,18 +181,25 @@ class _CurrentTimeState extends State<CurrentTime> {
                           'hours [${listSetHours[0]}] minutes [${listSetHours[1]}]');
 
                       NotificationService().showNotification2(
-                          0, 'Hello', 'Wake up ', 2, 'Wake Up', 'New Alarm');
+                          0,
+                          'Hello',
+                          'Wake up ',
+                          listSetHours[0],
+                          listSetHours[1],
+                          'wakeup',
+                          'New Alarm');
+
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text(
+                          'Alarm set for ${listSetHours[0]} hours '
+                          '${listSetHours[1]} minutes',
+                          style: const TextStyle(
+                              fontFamily: 'Montserrat', color: Colors.black),
+                        ),
+                        duration: const Duration(seconds: 2),
+                        backgroundColor: Colors.white,
+                      ));
                     }
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text(
-                        'Alarm set for ${listSetHours[0]} hours '
-                        '${listSetHours[1]} minutes',
-                        style: const TextStyle(
-                            fontFamily: 'Montserrat', color: Colors.black),
-                      ),
-                      duration: const Duration(seconds: 2),
-                      backgroundColor: Colors.white,
-                    ));
                   },
                   child: const Text(
                     'Set Alarm',
@@ -243,6 +268,7 @@ class _CurrentTimeState extends State<CurrentTime> {
                         _loadRingtone();
                         _loadSwitch();
                         _loadRandomId();
+
                         Navigator.push(
                           context,
                           MaterialPageRoute(

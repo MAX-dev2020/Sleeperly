@@ -31,72 +31,72 @@ class _RingtonesDialogState extends State<RingtonesDialog> {
         title: const Text('Ringtones'),
         content: Column(mainAxisSize: MainAxisSize.min, children: [
           RadioListTile(
-              value: 'Wake Up',
+              value: 'wakeup',
               groupValue: widget.ringtone,
               onChanged: (String? value) {
                 FlutterRingtonePlayer.play(
-                    fromAsset: "assets/Ringtones/Wake Up.mp3",
+                    fromAsset: "assets/Ringtones/wakeup.mp3",
                     looping: false,
                     asAlarm: true);
                 setState(() {
                   widget.ringtone = value!;
-                  setRingtone('Wake Up');
+                  setRingtone('wakeup');
                 });
               },
-              title: const Text('Wake Up')),
+              title: const Text('Wakeup')),
           RadioListTile(
-              value: 'Alarm',
+              value: 'alarm',
               groupValue: widget.ringtone,
               onChanged: (String? value) {
                 FlutterRingtonePlayer.play(
-                    fromAsset: "assets/Ringtones/Alarm.mp3",
+                    fromAsset: "assets/Ringtones/alarm.mp3",
                     looping: false,
                     asAlarm: true);
                 setState(() {
                   widget.ringtone = value!;
-                  setRingtone('Alarm');
+                  setRingtone('alarm');
                 });
               },
               title: const Text('Alarm')),
           RadioListTile(
-              value: 'Remix',
+              value: 'remix',
               groupValue: widget.ringtone,
               onChanged: (String? value) {
                 FlutterRingtonePlayer.play(
-                    fromAsset: "assets/Ringtones/Remix.mp3",
+                    fromAsset: "assets/Ringtones/remix.mp3",
                     looping: false,
                     asAlarm: true);
                 setState(() {
                   widget.ringtone = value!;
-                  setRingtone('Remix');
+                  setRingtone('remix');
                 });
               },
               title: const Text('Remix')),
           RadioListTile(
-              value: 'Chime',
+              value: 'chime',
               groupValue: widget.ringtone,
               onChanged: (String? value) {
                 FlutterRingtonePlayer.play(
-                    fromAsset: "assets/Ringtones/Chime.mp3",
+                    fromAsset: "assets/Ringtones/chime.mp3",
                     looping: false,
                     asAlarm: true);
                 setState(() {
                   widget.ringtone = value!;
-                  setRingtone('Chime');
+                  setRingtone('chime');
                 });
               },
               title: const Text('Chime')),
           RadioListTile(
-              value: 'Clock',
+              value: 'clock',
               groupValue: widget.ringtone,
               onChanged: (String? value) {
                 FlutterRingtonePlayer.play(
-                    fromAsset: "assets/Ringtones/Clock.mp3",
+                    fromAsset: "assets/Ringtones/clock.mp3",
                     looping: false,
                     asAlarm: true);
                 setState(() {
                   widget.ringtone = value!;
-                  setRingtone('Clock');
+                  setRingtone('clock');
                 });
               },
               title: const Text('Clock')),

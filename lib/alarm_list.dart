@@ -51,6 +51,7 @@ class _AlarmListState extends State<AlarmList> {
   int screen = 0;
   int randomnumber = 0;
   String times = '';
+  List<String> finalTime = [];
   var item;
 
   List<String> day = [
@@ -78,6 +79,12 @@ class _AlarmListState extends State<AlarmList> {
       final prefs = await SharedPreferences.getInstance();
       List<String> convdays = prefs.getStringList('days') ?? [];
       finalDays = convdays;
+    }
+
+    _loadtime() async {
+      final prefs = await SharedPreferences.getInstance();
+      List<String> convtime = prefs.getStringList('time') ?? [];
+      widget.time = convtime;
     }
 
     _loadRandom(int index, int i) async {
@@ -190,15 +197,10 @@ class _AlarmListState extends State<AlarmList> {
       }
     }
 
-    String getRingtones(int index) {
-      String values = '';
-      try {
-        values = finalRingtone[index];
-      } catch (e) {
-        values = 'Wake Up';
-      }
-
-      return values;
+    _loadRingtone() async {
+      final prefs = await SharedPreferences.getInstance();
+      finalRingtone = prefs.getStringList('ringtone') ?? [];
+      print("finalRingtone $finalRingtone");
     }
 
     bool isSwitchEnabled(int index) {
@@ -214,9 +216,60 @@ class _AlarmListState extends State<AlarmList> {
       }
     }
 
+    String getRingtones(int index) {
+      String values = '';
+      try {
+        values = finalRingtone[index];
+      } catch (e) {
+        values = 'wakeup';
+      }
+
+      return values;
+    }
+
     setSwitch() async {
       final prefs = await SharedPreferences.getInstance();
       prefs.setStringList('switch', widget.switchSelected);
+    }
+
+    setNotifications(int index) async {
+      List number = [];
+      int count = 0;
+      for (int i = 0; i < 9; i++) {
+        if (finalDaysMaps[index][day[i]] == true) {
+          print("finalDays $finalDays");
+          if (widget.time[index][6] == 'P' || widget.time[index][5] == 'P') {
+            if (int.parse(widget.time[index].split(':')[0]) == 12) {
+              hour = int.parse(widget.time[index].split(':')[0]);
+            } else {
+              hour = int.parse(widget.time[index].split(':')[0]) + 12;
+            }
+          } else {
+            if (int.parse(widget.time[index].split(':')[0]) == 12) {
+              hour = 0;
+            } else {
+              hour = int.parse(widget.time[index].split(':')[0]);
+            }
+          }
+          _loadRandom(index, count);
+          _loadRingtone();
+          String ringtoneNow = finalRingtone[index];
+          count++;
+          await NotificationService().showNotification(
+              id,
+              'Hello',
+              "Hello World",
+              hour,
+              widget.time[index][2] != ':'
+                  ? int.parse((widget.time[index][2] + widget.time[index][3]))
+                  : int.parse(
+                      (widget.time[index][3]) + (widget.time[index][4])),
+              getDays(day[i]),
+              ringtoneNow,
+              'New Alarm');
+          number.add(randomnumber);
+        }
+      }
     }
 
     return Padding(
@@ -317,51 +370,6 @@ class _AlarmListState extends State<AlarmList> {
                             NotificationService()
                                 .cancelNotification(randomList[index][i]);
                           }
-                          List number = [];
-                          int count = 0;
-                          for (int i = 0; i < 9; i++) {
-                            if (finalDaysMaps[index][day[i]] == true) {
-                              print("finalDays $finalDays");
-                              if (widget.time[index][6] == 'P' ||
-                                  widget.time[index][5] == 'P') {
-                                if (int.parse(
-                                        widget.time[index].split(':')[0]) ==
-                                    12) {
-                                  hour = int.parse(
-                                      widget.time[index].split(':')[0]);
-                                } else {
-                                  hour = int.parse(
-                                          widget.time[index].split(':')[0]) +
-                                      12;
-                                }
-                              } else {
-                                if (int.parse(
-                                        widget.time[index].split(':')[0]) ==
-                                    12) {
-                                  hour = 0;
-                                } else {
-                                  hour = int.parse(
-                                      widget.time[index].split(':')[0]);
-                                }
-                              }
-                              _loadRandom(index, count);
-                              count++;
-                              await NotificationService().showNotification(
-                                  id,
-                                  'Hello',
-                                  "Hello World",
-                                  hour,
-                                  widget.time[index][2] != ':'
-                                      ? int.parse((widget.time[index][2] +
-                                          widget.time[index][3]))
-                                      : int.parse((widget.time[index][3]) +
-                                          (widget.time[index][4])),
-                                  getDays(day[i]),
-                                  'Wake Up',
-                                  'New Alarm');
-                              number.add(randomnumber);
-                            }
-                          }
                         },
                       ),
                     );
@@ -418,7 +426,8 @@ class _AlarmListState extends State<AlarmList> {
                     print("latestswitch ${latestSwitchSelected1}");
 
                     latestRandom1 = prefs.getString('random') ?? '';
-                    List randomList = json.decode(latestRandom1);
+                    print("latestRandom1 $latestRandom1");
+                    List randomList = jsonDecode(latestRandom1);
                     oldId = randomList[index];
                     setState(() {
                       randomList.removeAt(index);
@@ -427,7 +436,7 @@ class _AlarmListState extends State<AlarmList> {
 
                     prefs.setString('random', jsonEncode(randomList));
                     widget.randomId = prefs.getString('random') ?? '';
-                    print("latestrandom ${latestRandom1}");
+                    print("latestrandomdsf ${widget.randomId}");
 
                     NotificationService().cancelNotification(id);
                     ScaffoldMessenger.of(context).showSnackBar(snackbar);
@@ -447,6 +456,9 @@ class _AlarmListState extends State<AlarmList> {
                                   )),
                         ).then((value) async {
                           await _loaddays();
+                          await _loadRingtone();
+                          await _loadtime();
+                          String ringtoneNow = finalRingtone[index];
                           finalDaysMaps = [];
                           for (var element in finalDays) {
                             finalDaysMaps.add(json.decode(element));
@@ -459,15 +471,17 @@ class _AlarmListState extends State<AlarmList> {
                           final prefs = await SharedPreferences.getInstance();
                           String convdays = prefs.getString('random') ?? '';
                           List randomList = jsonDecode(convdays);
-                          print("randomList ${randomList}");
+                          print("randomListdf ${randomList}");
                           if (randomList[index].isNotEmpty) {
                             for (int i = 0; i < randomList[index].length; i++) {
                               NotificationService()
                                   .cancelNotification(randomList[index][i]);
+                              print("canceled");
                             }
                           } else {
                             _loadRandom(index, 0);
                             NotificationService().cancelNotification(id);
+                            print("canceled");
                           }
 
                           randomList.removeAt(index);
@@ -511,7 +525,7 @@ class _AlarmListState extends State<AlarmList> {
                                       : int.parse((widget.time[index][3]) +
                                           (widget.time[index][4])),
                                   getDays(day[i]),
-                                  'Wake Up',
+                                  ringtoneNow,
                                   'New Alarm');
                               number.add(randomnumber);
                             }
@@ -576,64 +590,13 @@ class _AlarmListState extends State<AlarmList> {
                                         NotificationService()
                                             .cancelNotification(
                                                 randomList[index][i]);
-                                        print("cencelled");
+                                        print("cancelled");
                                       }
                                       // AndroidAlarmManager.cancel(1);
                                     } else {
-                                      List number = [];
-                                      int count = 0;
-                                      for (int i = 0; i < 9; i++) {
-                                        if (finalDaysMaps[index][day[i]] ==
-                                            true) {
-                                          print("finalDays $finalDays");
-                                          if (widget.time[index][6] == 'P' ||
-                                              widget.time[index][5] == 'P') {
-                                            if (int.parse(widget.time[index]
-                                                    .split(':')[0]) ==
-                                                12) {
-                                              hour = int.parse(widget
-                                                  .time[index]
-                                                  .split(':')[0]);
-                                            } else {
-                                              hour = int.parse(widget
-                                                      .time[index]
-                                                      .split(':')[0]) +
-                                                  12;
-                                            }
-                                          } else {
-                                            if (int.parse(widget.time[index]
-                                                    .split(':')[0]) ==
-                                                12) {
-                                              hour = 0;
-                                            } else {
-                                              hour = int.parse(widget
-                                                  .time[index]
-                                                  .split(':')[0]);
-                                            }
-                                          }
-                                          _loadRandom(index, count);
-                                          count++;
-                                          await NotificationService()
-                                              .showNotification(
-                                                  id,
-                                                  'Hello',
-                                                  "Hello World",
-                                                  hour,
-                                                  widget.time[index][2] != ':'
-                                                      ? int.parse((widget
-                                                              .time[index][2] +
-                                                          widget.time[index]
-                                                              [3]))
-                                                      : int.parse((widget
-                                                              .time[index][3]) +
-                                                          (widget.time[index]
-                                                              [4])),
-                                                  getDays(day[i]),
-                                                  'Wake Up',
-                                                  'New Alarm');
-                                          number.add(randomnumber);
-                                        }
-                                      }
+                                      _loadRingtone();
+                                      String ringtoneNow = finalRingtone[index];
+                                      setNotifications(index);
                                     }
                                   },
                                 ),

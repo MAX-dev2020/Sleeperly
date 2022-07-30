@@ -77,11 +77,15 @@ flutter:
       - images/tuna.gif
       - images/waves.gif
       - images/stars.gif
-      - assets/Ringtones/Wake Up.mp3
-      - assets/Ringtones/Chime.mp3
-      - assets/Ringtones/Remix.mp3
-      - assets/Ringtones/Clock.mp3
-      - assets/Ringtones/Alarm.mp3
+      - images/movemoon.gif
+      - images/movemoon2.gif
+      - images/movesun.gif
+      - images/movesun2.gif
+      - assets/Ringtones/wakeup.mp3
+      - assets/Ringtones/chime.mp3
+      - assets/Ringtones/remix.mp3
+      - assets/Ringtones/clock.mp3
+      - assets/Ringtones/alarm.mp3
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

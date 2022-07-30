@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:sleeperly/Themes/dialogtheme.dart';
+import 'package:sleeperly/Themes/theme_time.dart';
 import 'package:sleeperly/current_time.dart';
 import 'package:sleeperly/dialogs/days.dart';
 import 'package:sleeperly/dialogs/ringtones.dart';
@@ -9,9 +11,9 @@ import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CustomAlarmSettings extends StatefulWidget {
-  final String time;
+  String time;
   final int index;
-  const CustomAlarmSettings({
+  CustomAlarmSettings({
     Key? key,
     required this.time,
     required this.index,
@@ -41,6 +43,8 @@ class _CustomAlarmSettingsState extends State<CustomAlarmSettings> {
 
   @override
   Widget build(BuildContext context) {
+    StreamController<String> controller = StreamController<String>();
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: const Color.fromARGB(255, 0, 0, 0),
@@ -54,21 +58,29 @@ class _CustomAlarmSettingsState extends State<CustomAlarmSettings> {
           children: [
             Align(
               alignment: Alignment.center,
-              child: Text(
-                widget.time,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 60,
-                  fontFamily: 'Montserrat',
-                  shadows: <Shadow>[
-                    Shadow(
-                      offset: const Offset(5.0, 2.0),
-                      blurRadius: 5.0,
-                      color: Colors.white.withOpacity(0.3),
-                    ),
-                  ],
-                ),
-              ),
+              child: StreamBuilder<Object>(
+                  stream: controller.stream,
+                  builder: (context, snapshot) {
+                    if (snapshot.data != null) {
+                      widget.time = snapshot.data.toString();
+                    }
+
+                    return Text(
+                      widget.time,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 60,
+                        fontFamily: 'Montserrat',
+                        shadows: <Shadow>[
+                          Shadow(
+                            offset: const Offset(5.0, 2.0),
+                            blurRadius: 5.0,
+                            color: Colors.white.withOpacity(0.3),
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
             ),
             Padding(
               padding: const EdgeInsets.only(top: 40),
@@ -207,48 +219,73 @@ class _CustomAlarmSettingsState extends State<CustomAlarmSettings> {
                 color: Color.fromARGB(255, 255, 255, 255),
               ),
             ),
-            Column(
-              children: [
-                Align(
-                  alignment: Alignment.topLeft,
-                  child: Row(
-                    children: const [
-                      Padding(
-                        padding: EdgeInsets.only(left: 20),
-                        child: Icon(
-                          Icons.volume_up_outlined,
-                          color: Colors.white,
-                        ),
+            InkWell(
+              onTap: () async {
+                getRingtone();
+                TimeOfDay? picked = await showTimePicker(
+                  context: context,
+                  initialTime: TimeOfDay.now(),
+                  builder: (context, child) {
+                    return MediaQuery(
+                      data: MediaQuery.of(context).copyWith(
+                          alwaysUse24HourFormat: false, textScaleFactor: 1),
+                      child: Theme(
+                        data: buildShrineTheme(),
+                        child: child!,
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(left: 20),
+                    );
+                  },
+                );
+                if (picked != null) {
+                  String timePicked = getformattedTime(picked);
+                  controller.sink.add(timePicked);
+                  final prefs = await SharedPreferences.getInstance();
+                  List<String> select = prefs.getStringList('time') ?? [];
+                  select[widget.index] = timePicked;
+                  prefs.setStringList('time', select);
+                }
+              },
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: Column(
+                  children: [
+                    Row(
+                      children: const [
+                        Padding(
+                          padding: EdgeInsets.only(left: 20),
+                          child: Icon(
+                            Icons.edit_notifications_outlined,
+                            color: Colors.white,
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(left: 20),
+                          child: Text(
+                            'Edit Alarm',
+                            style: TextStyle(
+                                fontSize: 40,
+                                fontFamily: 'Montserrat',
+                                color: Colors.white),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const Align(
+                      alignment: Alignment.topLeft,
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 40, top: 10, bottom: 20),
                         child: Text(
-                          'Volume',
+                          'Edit time for alarm',
                           style: TextStyle(
-                              fontSize: 40,
+                              fontSize: 20,
                               fontFamily: 'Montserrat',
                               color: Colors.white),
                         ),
-                      )
-                    ],
-                  ),
+                      ),
+                    ),
+                  ],
                 ),
-                Slider(
-                  label: r.toString(),
-                  thumbColor: const Color.fromARGB(255, 255, 255, 255),
-                  activeColor: Colors.white,
-                  inactiveColor: const Color.fromARGB(255, 123, 118, 118),
-                  min: 0.0,
-                  max: 100.0,
-                  divisions: 10,
-                  onChanged: (value) {
-                    setState(() {
-                      r = value;
-                    });
-                  },
-                  value: r,
-                )
-              ],
+              ),
             ),
             Padding(
               padding: const EdgeInsets.only(top: 0),
@@ -270,4 +307,17 @@ class _CustomAlarmSettingsState extends State<CustomAlarmSettings> {
       ),
     );
   }
+}
+
+getformattedTime(TimeOfDay time) {
+  int hour = time.hour;
+  if (time.hour > 12) {
+    hour = int.parse(time.hour.toString()) - 12;
+  }
+  if (time.hour == 0) {
+    hour = 12;
+  }
+  String minute =
+      time.minute < 10 ? '0' + time.minute.toString() : time.minute.toString();
+  return '$hour:$minute ${(time.period.toString().split('.')[1]).toUpperCase()}';
 }

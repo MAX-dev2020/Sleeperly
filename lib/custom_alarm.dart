@@ -48,7 +48,7 @@ class CustomAlarm extends StatelessWidget {
     List<String> listSwitch = switchSelected;
     List<String> listTime = [];
     String listRandom = randomSelected;
-    List<List<int>> randomNum = [];
+    List<List<dynamic>> randomNum = [];
     _loaddays() async {
       final prefs = await SharedPreferences.getInstance();
       List<String> convdays = prefs.getStringList('days') ?? [];
@@ -135,7 +135,7 @@ class CustomAlarm extends StatelessWidget {
 
                     prefs.setStringList('days', listdays);
                     selectedringtone = prefs.getStringList('ringtone') ?? [];
-                    selectedringtone.add('Wake Up');
+                    selectedringtone.add('wakeup');
                     prefs.setStringList('ringtone', selectedringtone);
 
                     listSwitch.clear();
@@ -145,23 +145,24 @@ class CustomAlarm extends StatelessWidget {
 
                     listRandom = prefs.getString('random') ?? '';
                     List randomList = [];
-                    randomList = jsonDecode(listRandom);
-                    int num = random.nextInt(100);
-                    randomList.add(num);
-
-                    while (true) {
-                      if (randomList.contains(num) && randomList.isNotEmpty) {
-                        randomList[randomList.length - 1] = random.nextInt(100);
-                      } else {
-                        break;
-                      }
+                    if (listRandom.isNotEmpty) {
+                      randomList = jsonDecode(listRandom);
                     }
 
+                    int num = random.nextInt(100);
+                    randomNum = [];
+
+                    print("randomList custom $randomList");
+                    for (int i = 0; i < randomList.length; i++) {
+                      randomNum.add(randomList[i]);
+                    }
+                    randomList.add(num);
                     randomNum.add([num]);
 
                     int hour1;
-                    print(randomNum);
+
                     prefs.setString('random', jsonEncode(randomNum));
+                    await _loadRandom();
 
                     if (listTime[listSwitch.length - 1][6] == 'P' ||
                         listTime[listSwitch.length - 1][5] == 'P') {
@@ -214,13 +215,13 @@ class CustomAlarm extends StatelessWidget {
                     print(listSwitch.length - 1);
                     print(hour1);
 
-                    listTime[0][2] != ':'
-                        ? print(int.parse((listTime[listSwitch.length - 1][2] +
-                            listTime[listSwitch.length - 1][3])))
-                        : print(int.parse((listTime[listSwitch.length - 1][3]) +
-                            (listTime[listSwitch.length - 1][4])));
+                    // listTime[0][2] != ':'
+                    //     ? print(int.parse((listTime[listSwitch.length - 1][2] +
+                    //         listTime[listSwitch.length - 1][3])))
+                    //     : print(int.parse((listTime[listSwitch.length - 1][3]) +
+                    //         (listTime[listSwitch.length - 1][4])));
 
-                    NotificationService().showNotification(
+                    await NotificationService().showNotification(
                         randomList[randomList.length - 1],
                         'Hello',
                         "Hello World",
@@ -231,7 +232,7 @@ class CustomAlarm extends StatelessWidget {
                             : int.parse((listTime[listSwitch.length - 1][3]) +
                                 (listTime[listSwitch.length - 1][4])),
                         0,
-                        'Wake Up',
+                        'wakeup',
                         '$randomNum');
                   }
                 }),
@@ -254,7 +255,7 @@ class CustomAlarm extends StatelessWidget {
             days: listdays,
             ringtone: listRingtone,
             switchSelected: listSwitch,
-            randomId: jsonEncode(randomNum),
+            randomId: listRandom,
           );
         },
       ),
