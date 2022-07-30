@@ -64,23 +64,13 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-      - images/night.jpg
-      - images/moon.gif
+      
       - images/rivermoon.gif
-      - images/sky.jpg
-      - images/ocean.jpg
-      - images/sky2.jpg
-      - images/morning.jpg
       - images/riv.gif
       - images/sun.gif
-      - images/awake.gif
-      - images/tuna.gif
-      - images/waves.gif
-      - images/stars.gif
-      - images/movemoon.gif
       - images/movemoon2.gif
-      - images/movesun.gif
       - images/movesun2.gif
+      - images/waves.gif
       - assets/Ringtones/wakeup.mp3
       - assets/Ringtones/chime.mp3
       - assets/Ringtones/remix.mp3

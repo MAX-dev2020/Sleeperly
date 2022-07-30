@@ -110,6 +110,7 @@ class _CurrentTimeState extends State<CurrentTime> {
                     if (!snapshot.hasData) {
                       return const Text("Loading.....");
                     }
+
                     return Padding(
                       padding: const EdgeInsets.all(20.0),
                       child: Text(
@@ -134,10 +135,10 @@ class _CurrentTimeState extends State<CurrentTime> {
                 height: 200,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
-                  color: Colors.white,
+                  color: Colors.black,
                   image: DecorationImage(
                     image: int.parse(
-                                TimeOfDay.now().toString().substring(10, 11)) <
+                                TimeOfDay.now().toString().substring(10, 12)) <
                             19
                         ? background
                         : background2,

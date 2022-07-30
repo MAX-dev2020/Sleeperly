@@ -35,7 +35,7 @@ class NavDrawer extends StatelessWidget {
               padding: EdgeInsets.zero,
               children: <Widget>[
                 SizedBox(
-                  height: 600,
+                  height: MediaQuery.of(context).size.height * 0.8,
                   child: DrawerHeader(
                     child: const Text(""),
                     decoration: BoxDecoration(

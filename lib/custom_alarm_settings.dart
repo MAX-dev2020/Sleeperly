@@ -53,257 +53,261 @@ class _CustomAlarmSettingsState extends State<CustomAlarmSettings> {
         elevation: 3,
         backgroundColor: const Color.fromARGB(255, 0, 0, 0),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Align(
-              alignment: Alignment.center,
-              child: StreamBuilder<Object>(
-                  stream: controller.stream,
-                  builder: (context, snapshot) {
-                    if (snapshot.data != null) {
-                      widget.time = snapshot.data.toString();
-                    }
+      body: Column(
+        children: [
+          Align(
+            alignment: Alignment.center,
+            child: StreamBuilder<Object>(
+                stream: controller.stream,
+                builder: (context, snapshot) {
+                  if (snapshot.data != null) {
+                    widget.time = snapshot.data.toString();
+                  }
 
-                    return Text(
-                      widget.time,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 60,
-                        fontFamily: 'Montserrat',
-                        shadows: <Shadow>[
-                          Shadow(
-                            offset: const Offset(5.0, 2.0),
-                            blurRadius: 5.0,
-                            color: Colors.white.withOpacity(0.3),
-                          ),
-                        ],
-                      ),
-                    );
-                  }),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 40),
-              child: InkWell(
-                onTap: () {
-                  _loadIndex();
-                  showDialog(
-                      context: context,
-                      builder: (context) {
-                        return Theme(
-                            data: buildDialogTheme(),
-                            child: DaysDialog(
-                              index: widget.index,
-                              mapdays: mapdays,
-                            ));
-                      });
-                },
-                child: Align(
-                  alignment: Alignment.topLeft,
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 20),
-                        child: Row(
-                          children: const [
-                            Icon(
-                              Icons.repeat_outlined,
-                              color: Colors.white,
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(left: 20),
-                              child: Text(
-                                'Repeat',
-                                style: TextStyle(
-                                    fontSize: 40,
-                                    fontFamily: 'Montserrat',
-                                    color: Colors.white),
-                              ),
-                            ),
-                          ],
+                  return Text(
+                    widget.time,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 60,
+                      fontFamily: 'Montserrat',
+                      shadows: <Shadow>[
+                        Shadow(
+                          offset: const Offset(5.0, 2.0),
+                          blurRadius: 5.0,
+                          color: Colors.white.withOpacity(0.3),
                         ),
-                      ),
-                      const Align(
-                        alignment: Alignment.topLeft,
-                        child: Padding(
-                          padding: EdgeInsets.only(left: 40, top: 10),
-                          child: Text(
-                            "Select days to repeat alarm",
-                            style: TextStyle(
-                                fontSize: 20,
-                                fontFamily: 'Montserrat',
-                                color: Colors.white),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            const Padding(
-              padding: EdgeInsets.only(top: 10, bottom: 10),
-              child: Divider(
-                color: Color.fromARGB(255, 255, 255, 255),
-              ),
-            ),
-            InkWell(
-              onTap: () async {
-                getRingtone();
+                      ],
+                    ),
+                  );
+                }),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 40),
+            child: InkWell(
+              onTap: () {
+                _loadIndex();
                 showDialog(
                     context: context,
                     builder: (context) {
                       return Theme(
                           data: buildDialogTheme(),
-                          child: RingtonesDialog(
-                            ringtoneList: selectedringtone,
-                            ringtone: selectedringtone[widget.index],
+                          child: DaysDialog(
                             index: widget.index,
+                            mapdays: mapdays,
                           ));
-                    }).then((value) {
-                  FlutterRingtonePlayer.stop();
-                });
-                final prefs = await SharedPreferences.getInstance();
-                List<String> select = prefs.getStringList('ringtone') ?? [];
-                FlutterRingtonePlayer.play(
-                    fromAsset: "assets/Ringtones/${select[widget.index]}.mp3",
-                    looping: false,
-                    asAlarm: true);
-                print(selectedringtone.length);
+                    });
               },
               child: Align(
                 alignment: Alignment.topLeft,
                 child: Column(
                   children: [
-                    Row(
-                      children: const [
-                        Padding(
-                          padding: EdgeInsets.only(left: 20),
-                          child: Icon(
-                            Icons.music_note_outlined,
+                    Padding(
+                      padding: const EdgeInsets.only(left: 20),
+                      child: Row(
+                        children: const [
+                          Icon(
+                            Icons.repeat_outlined,
                             color: Colors.white,
                           ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(left: 20),
-                          child: Text(
-                            'Ringtone',
-                            style: TextStyle(
-                                fontSize: 40,
-                                fontFamily: 'Montserrat',
-                                color: Colors.white),
+                          Padding(
+                            padding: EdgeInsets.only(left: 20),
+                            child: Text(
+                              'Repeat',
+                              style: TextStyle(
+                                  fontSize: 40,
+                                  fontFamily: 'Montserrat',
+                                  color: Colors.white),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                     const Align(
                       alignment: Alignment.topLeft,
                       child: Padding(
                         padding: EdgeInsets.only(left: 40, top: 10),
                         child: Text(
-                          'Select ringtone for alarm',
+                          "Select days to repeat alarm",
                           style: TextStyle(
                               fontSize: 20,
                               fontFamily: 'Montserrat',
                               color: Colors.white),
                         ),
                       ),
-                    ),
+                    )
                   ],
                 ),
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.only(top: 10, bottom: 10),
-              child: Divider(
-                color: Color.fromARGB(255, 255, 255, 255),
-              ),
+          ),
+          const Padding(
+            padding: EdgeInsets.only(top: 10, bottom: 10),
+            child: Divider(
+              color: Color.fromARGB(255, 255, 255, 255),
             ),
-            InkWell(
-              onTap: () async {
-                getRingtone();
-                TimeOfDay? picked = await showTimePicker(
+          ),
+          InkWell(
+            onTap: () async {
+              getRingtone();
+              showDialog(
                   context: context,
-                  initialTime: TimeOfDay.now(),
-                  builder: (context, child) {
-                    return MediaQuery(
-                      data: MediaQuery.of(context).copyWith(
-                          alwaysUse24HourFormat: false, textScaleFactor: 1),
-                      child: Theme(
-                        data: buildShrineTheme(),
-                        child: child!,
+                  builder: (context) {
+                    return Theme(
+                        data: buildDialogTheme(),
+                        child: RingtonesDialog(
+                          ringtoneList: selectedringtone,
+                          ringtone: selectedringtone[widget.index],
+                          index: widget.index,
+                        ));
+                  }).then((value) {
+                FlutterRingtonePlayer.stop();
+              });
+              final prefs = await SharedPreferences.getInstance();
+              List<String> select = prefs.getStringList('ringtone') ?? [];
+              FlutterRingtonePlayer.play(
+                  fromAsset: "assets/Ringtones/${select[widget.index]}.mp3",
+                  looping: false,
+                  asAlarm: true);
+              print(selectedringtone.length);
+            },
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: Column(
+                children: [
+                  Row(
+                    children: const [
+                      Padding(
+                        padding: EdgeInsets.only(left: 20),
+                        child: Icon(
+                          Icons.music_note_outlined,
+                          color: Colors.white,
+                        ),
                       ),
-                    );
-                  },
-                );
-                if (picked != null) {
-                  String timePicked = getformattedTime(picked);
-                  controller.sink.add(timePicked);
-                  final prefs = await SharedPreferences.getInstance();
-                  List<String> select = prefs.getStringList('time') ?? [];
-                  select[widget.index] = timePicked;
-                  prefs.setStringList('time', select);
-                }
-              },
-              child: Align(
-                alignment: Alignment.topLeft,
-                child: Column(
-                  children: [
-                    Row(
-                      children: const [
-                        Padding(
-                          padding: EdgeInsets.only(left: 20),
-                          child: Icon(
-                            Icons.edit_notifications_outlined,
-                            color: Colors.white,
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(left: 20),
-                          child: Text(
-                            'Edit Alarm',
-                            style: TextStyle(
-                                fontSize: 40,
-                                fontFamily: 'Montserrat',
-                                color: Colors.white),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const Align(
-                      alignment: Alignment.topLeft,
-                      child: Padding(
-                        padding: EdgeInsets.only(left: 40, top: 10, bottom: 20),
+                      Padding(
+                        padding: EdgeInsets.only(left: 20),
                         child: Text(
-                          'Edit time for alarm',
+                          'Ringtone',
                           style: TextStyle(
-                              fontSize: 20,
+                              fontSize: 40,
                               fontFamily: 'Montserrat',
                               color: Colors.white),
                         ),
                       ),
+                    ],
+                  ),
+                  const Align(
+                    alignment: Alignment.topLeft,
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 40, top: 10),
+                      child: Text(
+                        'Select ringtone for alarm',
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontFamily: 'Montserrat',
+                            color: Colors.white),
+                      ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 0),
-              child: Container(
-                  height: 250,
-                  width: MediaQuery.of(context).size.width,
-                  child: null,
-                  decoration: const BoxDecoration(
-                    backgroundBlendMode: BlendMode.clear,
-                    color: Colors.transparent,
-                    image: DecorationImage(
-                      image: AssetImage("images/waves.gif"),
-                      fit: BoxFit.cover,
+          ),
+          const Padding(
+            padding: EdgeInsets.only(top: 10, bottom: 10),
+            child: Divider(
+              color: Color.fromARGB(255, 255, 255, 255),
+            ),
+          ),
+          InkWell(
+            onTap: () async {
+              getRingtone();
+              TimeOfDay? picked = await showTimePicker(
+                context: context,
+                initialTime: TimeOfDay.now(),
+                builder: (context, child) {
+                  return MediaQuery(
+                    data: MediaQuery.of(context).copyWith(
+                        alwaysUse24HourFormat: false, textScaleFactor: 1),
+                    child: Theme(
+                      data: buildShrineTheme(),
+                      child: child!,
                     ),
-                  )),
-            )
-          ],
-        ),
+                  );
+                },
+              );
+              if (picked != null) {
+                String timePicked = getformattedTime(picked);
+                controller.sink.add(timePicked);
+                final prefs = await SharedPreferences.getInstance();
+                List<String> select = prefs.getStringList('time') ?? [];
+                select[widget.index] = timePicked;
+                prefs.setStringList('time', select);
+              }
+            },
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: Column(
+                children: [
+                  Row(
+                    children: const [
+                      Padding(
+                        padding: EdgeInsets.only(left: 20),
+                        child: Icon(
+                          Icons.edit_notifications_outlined,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(left: 20),
+                        child: Text(
+                          'Edit Alarm',
+                          style: TextStyle(
+                              fontSize: 40,
+                              fontFamily: 'Montserrat',
+                              color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Align(
+                    alignment: Alignment.topLeft,
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 40, top: 10, bottom: 0),
+                      child: Text(
+                        'Edit time for alarm',
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontFamily: 'Montserrat',
+                            color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const Padding(
+            padding: EdgeInsets.only(top: 10, bottom: 0),
+            child: Divider(
+              color: Color.fromARGB(255, 255, 255, 255),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 0),
+            child: Container(
+                height: MediaQuery.of(context).size.height * 0.32,
+                width: MediaQuery.of(context).size.width,
+                child: null,
+                decoration: const BoxDecoration(
+                  backgroundBlendMode: BlendMode.clear,
+                  color: Colors.transparent,
+                  image: DecorationImage(
+                    image: AssetImage("images/waves.gif"),
+                    fit: BoxFit.cover,
+                  ),
+                )),
+          )
+        ],
       ),
     );
   }
