@@ -1,13 +1,19 @@
+import 'dart:isolate';
+import 'dart:ui';
+
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:sleeperly/custom_alarm.dart';
 import 'package:sleeperly/services/notification_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'dart:convert';
+import 'package:sleeperly/main.dart';
 import 'package:sleeperly/custom_alarm_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:developer' as developer;
+
+int s1 = 0;
 
 // ignore: must_be_immutable
 class AlarmList extends StatefulWidget {
@@ -31,6 +37,36 @@ class AlarmList extends StatefulWidget {
 }
 
 class _AlarmListState extends State<AlarmList> {
+  static SendPort? uiSendPort;
+  int count = 0;
+  Future<void> stopAlarm() async {
+    developer.log('Increment counter!');
+
+    count++;
+
+    FlutterRingtonePlayer.playAlarm();
+  }
+
+  static Future<void> callback(int i) async {
+    developer.log('Alarm fired!');
+    // if (i == 0) {
+    //   developer.log('Alarm stopped!');
+    //   FlutterRingtonePlayer.stop();
+    // } else {
+    //   developer.log('Alarm firingggg');
+    //   FlutterRingtonePlayer.playAlarm();
+    // }
+    // final prefs = await SharedPreferences.getInstance();
+    // final currentCount = prefs.getInt(countKey) ?? 0;
+    // await prefs.setInt('countKey', currentCount + 1);
+    // FlutterRingtonePlayer.playAlarm();
+    // tz.initializeTimeZones();
+    uiSendPort ??= IsolateNameServer.lookupPortByName(isolateName);
+    uiSendPort?.send(null);
+    // NotificationService()
+    //     .showNotification2(1, 'OneTIme', 'oneShot', 2, 'Remix', 'sds');
+  }
+
   @override
   bool s = false;
   List<String> latestDays = [];
@@ -145,6 +181,17 @@ class _AlarmListState extends State<AlarmList> {
         }
         i++;
       }
+      if (finalDaysMaps[index][day[0]] == true) {
+        int days = DateTime.now().day;
+        if ((widget.time[index][2] != ':'
+                ? int.parse((widget.time[index][2] + widget.time[index][3]))
+                : int.parse(
+                    (widget.time[index][3]) + (widget.time[index][4]))) >
+            DateTime.now().minute) {
+          days + 1;
+        }
+        return 1;
+      }
       return 0;
     }
 
@@ -221,7 +268,7 @@ class _AlarmListState extends State<AlarmList> {
       try {
         values = finalRingtone[index];
       } catch (e) {
-        values = 'wakeup';
+        values = 'alarm';
       }
 
       return values;
@@ -233,6 +280,7 @@ class _AlarmListState extends State<AlarmList> {
     }
 
     setNotifications(int index) async {
+      await _loadtime();
       List number = [];
       int count = 0;
       for (int i = 0; i < 9; i++) {
@@ -255,18 +303,22 @@ class _AlarmListState extends State<AlarmList> {
           _loadRingtone();
           String ringtoneNow = finalRingtone[index];
           count++;
-          await NotificationService().showNotification(
-              id,
-              'Hello',
-              "Hello World",
-              hour,
-              widget.time[index][2] != ':'
-                  ? int.parse((widget.time[index][2] + widget.time[index][3]))
-                  : int.parse(
-                      (widget.time[index][3]) + (widget.time[index][4])),
-              getDays(day[i]),
-              ringtoneNow,
-              'New Alarm');
+
+          await AndroidAlarmManager.periodic(
+              const Duration(seconds: 60), id, callback,
+              startAt: DateTime(
+                  DateTime.now().year,
+                  DateTime.now().month,
+                  getDay(index),
+                  hour,
+                  widget.time[index][2] != ':'
+                      ? int.parse(
+                          (widget.time[index][2] + widget.time[index][3]))
+                      : int.parse(
+                          (widget.time[index][3]) + (widget.time[index][4])),
+                  0),
+              exact: true,
+              wakeup: true);
           number.add(randomnumber);
         }
       }
@@ -367,8 +419,10 @@ class _AlarmListState extends State<AlarmList> {
                           widget.randomId = prefs.getString('random') ?? '';
                           print("latestrandom ${widget.randomId}");
                           for (int i = 0; i < randomList[index].length; i++) {
-                            NotificationService()
-                                .cancelNotification(randomList[index][i]);
+                            AndroidAlarmManager.cancel(randomList[index][i]);
+                          }
+                          if (isSwitchEnabled(index)) {
+                            setNotifications(index);
                           }
                         },
                       ),
@@ -438,7 +492,10 @@ class _AlarmListState extends State<AlarmList> {
                     widget.randomId = prefs.getString('random') ?? '';
                     print("latestrandomdsf ${widget.randomId}");
 
-                    NotificationService().cancelNotification(id);
+                    for (int i = 0; i < oldId.length; i++) {
+                      AndroidAlarmManager.cancel(oldId[i]);
+                    }
+                    await FlutterRingtonePlayer.stop();
                     ScaffoldMessenger.of(context).showSnackBar(snackbar);
                   },
                   child: SizedBox(
@@ -455,82 +512,124 @@ class _AlarmListState extends State<AlarmList> {
                                     index: index,
                                   )),
                         ).then((value) async {
-                          await _loaddays();
-                          await _loadRingtone();
-                          await _loadtime();
-                          String ringtoneNow = finalRingtone[index];
-                          finalDaysMaps = [];
-                          for (var element in finalDays) {
-                            finalDaysMaps.add(json.decode(element));
-                          }
-                          for (int i = 0; i < 9; i++) {
-                            print(finalDaysMaps[index][day[i]]);
-                          }
+                          if (isSwitchEnabled(index)) {
+                            await _loaddays();
+                            await _loadRingtone();
+                            await _loadtime();
+                            String ringtoneNow = finalRingtone[index];
+                            finalDaysMaps = [];
+                            for (var element in finalDays) {
+                              finalDaysMaps.add(json.decode(element));
+                            }
+                            for (int i = 0; i < 9; i++) {
+                              print(finalDaysMaps[index][day[i]]);
+                            }
 
-                          print("index $index");
-                          final prefs = await SharedPreferences.getInstance();
-                          String convdays = prefs.getString('random') ?? '';
-                          List randomList = jsonDecode(convdays);
-                          print("randomListdf ${randomList}");
-                          if (randomList[index].isNotEmpty) {
-                            for (int i = 0; i < randomList[index].length; i++) {
-                              NotificationService()
-                                  .cancelNotification(randomList[index][i]);
+                            print("index $index");
+                            final prefs = await SharedPreferences.getInstance();
+                            String convdays = prefs.getString('random') ?? '';
+                            List randomList = jsonDecode(convdays);
+                            print("randomListdf ${randomList}");
+                            if (randomList[index].isNotEmpty) {
+                              for (int i = 0;
+                                  i < randomList[index].length;
+                                  i++) {
+                                await AndroidAlarmManager.cancel(
+                                    randomList[index][i]);
+
+                                print("canceled");
+                              }
+                            } else {
+                              _loadRandom(index, 0);
+                              await AndroidAlarmManager.cancel(id);
+
                               print("canceled");
                             }
-                          } else {
-                            _loadRandom(index, 0);
-                            NotificationService().cancelNotification(id);
-                            print("canceled");
-                          }
 
-                          randomList.removeAt(index);
-                          print("randomList2 ${randomList}");
-                          prefs.setString('random', jsonEncode(randomList));
-                          List number = [];
-                          for (int i = 0; i < 9; i++) {
-                            if (finalDaysMaps[index][day[i]] == true) {
-                              await getRandomNum();
-                              print("finalDays $finalDays");
-                              if (widget.time[index][6] == 'P' ||
-                                  widget.time[index][5] == 'P') {
-                                if (int.parse(
-                                        widget.time[index].split(':')[0]) ==
-                                    12) {
-                                  hour = int.parse(
-                                      widget.time[index].split(':')[0]);
+                            randomList.removeAt(index);
+                            print("randomList2 ${randomList}");
+                            prefs.setString('random', jsonEncode(randomList));
+                            List number = [];
+
+                            for (int i = 0; i < 9; i++) {
+                              if (finalDaysMaps[index][day[i]] == true) {
+                                await getRandomNum();
+                                print("finalDays $finalDays");
+                                if (widget.time[index][6] == 'P' ||
+                                    widget.time[index][5] == 'P') {
+                                  if (int.parse(
+                                          widget.time[index].split(':')[0]) ==
+                                      12) {
+                                    hour = int.parse(
+                                        widget.time[index].split(':')[0]);
+                                  } else {
+                                    hour = int.parse(
+                                            widget.time[index].split(':')[0]) +
+                                        12;
+                                  }
                                 } else {
-                                  hour = int.parse(
-                                          widget.time[index].split(':')[0]) +
-                                      12;
+                                  if (int.parse(
+                                          widget.time[index].split(':')[0]) ==
+                                      12) {
+                                    hour = 0;
+                                  } else {
+                                    hour = int.parse(
+                                        widget.time[index].split(':')[0]);
+                                  }
                                 }
-                              } else {
-                                if (int.parse(
-                                        widget.time[index].split(':')[0]) ==
-                                    12) {
-                                  hour = 0;
+                                if (finalDaysMaps[index][day[0]] == true) {
+                                  int days = DateTime.now().day;
+                                  if ((widget.time[index][2] != ':'
+                                          ? int.parse((widget.time[index][2] +
+                                              widget.time[index][3]))
+                                          : int.parse((widget.time[index][3]) +
+                                              (widget.time[index][4]))) <
+                                      DateTime.now().minute) {
+                                    days++;
+                                  }
+                                  await AndroidAlarmManager.oneShotAt(
+                                      DateTime(
+                                          DateTime.now().year,
+                                          DateTime.now().month,
+                                          days,
+                                          hour,
+                                          widget.time[index][2] != ':'
+                                              ? int.parse((widget.time[index]
+                                                      [2] +
+                                                  widget.time[index][3]))
+                                              : int.parse((widget.time[index]
+                                                      [3]) +
+                                                  (widget.time[index][4])),
+                                          0),
+                                      randomnumber,
+                                      callback,
+                                      exact: true,
+                                      wakeup: true);
                                 } else {
-                                  hour = int.parse(
-                                      widget.time[index].split(':')[0]);
+                                  await AndroidAlarmManager.periodic(
+                                      const Duration(seconds: 60), id, callback,
+                                      startAt: DateTime(
+                                          DateTime.now().year,
+                                          DateTime.now().month,
+                                          getDay(index),
+                                          hour,
+                                          widget.time[index][2] != ':'
+                                              ? int.parse((widget.time[index]
+                                                      [2] +
+                                                  widget.time[index][3]))
+                                              : int.parse((widget.time[index]
+                                                      [3]) +
+                                                  (widget.time[index][4])),
+                                          0),
+                                      exact: true,
+                                      wakeup: true);
                                 }
+                                number.add(randomnumber);
                               }
-                              await NotificationService().showNotification(
-                                  randomnumber,
-                                  'Hello',
-                                  "Hello World",
-                                  hour,
-                                  widget.time[index][2] != ':'
-                                      ? int.parse((widget.time[index][2] +
-                                          widget.time[index][3]))
-                                      : int.parse((widget.time[index][3]) +
-                                          (widget.time[index][4])),
-                                  getDays(day[i]),
-                                  ringtoneNow,
-                                  'New Alarm');
-                              number.add(randomnumber);
                             }
+
+                            setRandom(index, number);
                           }
-                          setRandom(index, number);
                         });
                       },
                       child: Ink(
@@ -579,6 +678,7 @@ class _AlarmListState extends State<AlarmList> {
                                       print("index ${index}");
                                     });
                                     if (!value) {
+                                      FlutterRingtonePlayer.stop();
                                       final prefs =
                                           await SharedPreferences.getInstance();
                                       String convdays =
@@ -587,11 +687,12 @@ class _AlarmListState extends State<AlarmList> {
                                       for (int i = 0;
                                           i < randomList[index].length;
                                           i++) {
-                                        NotificationService()
-                                            .cancelNotification(
-                                                randomList[index][i]);
                                         print("cancelled");
+                                        await AndroidAlarmManager.cancel(
+                                            randomList[index][i]);
                                       }
+
+                                      print("ringtone stopped");
                                       // AndroidAlarmManager.cancel(1);
                                     } else {
                                       _loadRingtone();

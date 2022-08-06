@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:sleeperly/Themes/theme_time.dart';
 import 'package:sleeperly/custom_alarm.dart';
 import 'package:sleeperly/drawer.dart';
+import 'package:sleeperly/main.dart';
 import 'package:sleeperly/services/notification_service.dart';
 import 'package:sleeperly/sleepcycle.dart';
 import 'package:flutter/material.dart';
@@ -227,7 +228,7 @@ class _CurrentTimeState extends State<CurrentTime> {
                     minimumSize: const Size(100, 40), //////// HERE
                   ),
                   onPressed: () {
-                    NotificationService().cancelNotification(0);
+                    FlutterRingtonePlayer.stop();
                     const Text('Cancel Alarm');
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                       content: Text(

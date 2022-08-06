@@ -88,14 +88,13 @@ class NotificationService {
         // Android details
         android: AndroidNotificationDetails(
           channelId,
-          'Main Channel',
+          "${channelId * 10}reminder",
           channelDescription: "Monish",
           importance: Importance.max,
           priority: Priority.max,
           fullScreenIntent: true,
           icon: '@drawable/ic_stat_sleeping',
           color: Colors.black,
-          playSound: true,
           sound: RawResourceAndroidNotificationSound(ringtone),
         ),
 
