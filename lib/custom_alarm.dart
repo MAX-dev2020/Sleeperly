@@ -5,6 +5,7 @@ import 'dart:math';
 import 'dart:ui';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:sleeperly/alarm_list.dart';
+import 'package:sleeperly/services/awesome_notifications.dart';
 import 'package:sleeperly/services/notification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
@@ -42,7 +43,7 @@ class _CustomAlarmState extends State<CustomAlarm> {
   @override
   void initState() {
     if (c == 0) {
-      port.listen((_) async => await stopAlarm());
+      port.listen((message) async => await stopAlarm(message));
     }
     c++;
     super.initState();
@@ -53,17 +54,17 @@ class _CustomAlarmState extends State<CustomAlarm> {
   }
 
   static SendPort? uiSendPort;
-  int count = 0;
-  Future<void> stopAlarm() async {
+  int counts = 0;
+  Future<void> stopAlarm(int i) async {
     developer.log('Increment counter!');
 
-    count++;
-
+    counts++;
+    createSleeperlyNotification(i);
     FlutterRingtonePlayer.playAlarm();
   }
 
   static Future<void> callback(int i) async {
-    developer.log('Alarm fired!');
+    developer.log('Alarm fired! $i');
     // if (i == 0) {
     //   developer.log('Alarm stopped!');
     //   FlutterRingtonePlayer.stop();
@@ -71,20 +72,20 @@ class _CustomAlarmState extends State<CustomAlarm> {
     //   developer.log('Alarm firingggg');
     //   FlutterRingtonePlayer.playAlarm();
     // }
-    final prefs = await SharedPreferences.getInstance();
-    final currentCount = prefs.getInt(countKey) ?? 0;
-    await prefs.setInt('countKey', currentCount + 1);
+    // final prefs = await SharedPreferences.getInstance();
+    // final currentCount = prefs.getInt(countKey) ?? 0;
+    // await prefs.setInt('countKey', currentCount + 1);
     // FlutterRingtonePlayer.playAlarm();
     // tz.initializeTimeZones();
     uiSendPort ??= IsolateNameServer.lookupPortByName(isolateName);
-    uiSendPort?.send(null);
+    uiSendPort?.send(i);
     // NotificationService()
     //     .showNotification2(1, 'OneTIme', 'oneShot', 2, 'Remix', 'sds');
   }
 
+  StreamController<List<String>> streams = StreamController<List<String>>();
   @override
   Widget build(BuildContext context) {
-    StreamController<List<String>> streams = StreamController<List<String>>();
     List<String> selectedringtone = [];
     List<String> listdays = widget.days;
     List<String> listRingtone = [];
@@ -240,14 +241,22 @@ class _CustomAlarmState extends State<CustomAlarm> {
                     //   wakeup: true,
                     // );
                     int days = DateTime.now().day;
-                    if ((listTime[listSwitch.length - 1][2] != ':'
-                            ? int.parse((listTime[listSwitch.length - 1][2] +
-                                listTime[listSwitch.length - 1][3]))
-                            : int.parse((listTime[listSwitch.length - 1][3]) +
-                                (listTime[listSwitch.length - 1][4]))) <
-                        DateTime.now().minute) {
+                    int minutesss = (listTime[listSwitch.length - 1][2] != ':'
+                        ? int.parse((listTime[listSwitch.length - 1][2] +
+                            listTime[listSwitch.length - 1][3]))
+                        : int.parse((listTime[listSwitch.length - 1][3]) +
+                            (listTime[listSwitch.length - 1][4])));
+                    print("minutes: $minutesss");
+                    print("hour: ${DateTime.now().minute}");
+                    if (minutesss <= DateTime.now().minute) {
+                      if (days == 7) {
+                        days = 0;
+                      }
                       days++;
+                      print("days now: ${DateTime.now().day}");
+                      print("days: $days");
                     }
+                    int i = 1;
                     await AndroidAlarmManager.oneShotAt(
                         DateTime(
                             DateTime.now().year,

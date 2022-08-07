@@ -1,8 +1,9 @@
 import 'dart:isolate';
 import 'dart:ui';
-
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:sleeperly/custom_alarm.dart';
+import 'package:sleeperly/services/awesome_notifications.dart';
 import 'package:sleeperly/services/notification_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'dart:convert';
@@ -39,11 +40,10 @@ class AlarmList extends StatefulWidget {
 class _AlarmListState extends State<AlarmList> {
   static SendPort? uiSendPort;
   int count = 0;
-  Future<void> stopAlarm() async {
+  Future<void> stopAlarm(int i) async {
     developer.log('Increment counter!');
-
     count++;
-
+    createSleeperlyNotification(i);
     FlutterRingtonePlayer.playAlarm();
   }
 
@@ -62,7 +62,8 @@ class _AlarmListState extends State<AlarmList> {
     // FlutterRingtonePlayer.playAlarm();
     // tz.initializeTimeZones();
     uiSendPort ??= IsolateNameServer.lookupPortByName(isolateName);
-    uiSendPort?.send(null);
+    uiSendPort?.send(i);
+
     // NotificationService()
     //     .showNotification2(1, 'OneTIme', 'oneShot', 2, 'Remix', 'sds');
   }
