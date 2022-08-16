@@ -1,11 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:isolate';
 import 'dart:math';
-import 'dart:ui';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:sleeperly/alarm_list.dart';
-import 'package:sleeperly/services/awesome_notifications.dart';
 import 'package:sleeperly/services/notification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
@@ -15,14 +12,10 @@ import 'package:sleeperly/Themes/theme_time.dart';
 import 'dart:developer' as developer;
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'main.dart';
-
 var random = new Random();
-const String countKey = 'count';
-int c = 0;
 
 // ignore: must_be_immutable
-class CustomAlarm extends StatefulWidget {
+class CustomAlarm extends StatelessWidget {
   List<String> time;
   List<String> days;
   List<String> switchSelected;
@@ -35,63 +28,26 @@ class CustomAlarm extends StatefulWidget {
       required this.randomSelected})
       : super(key: key);
 
-  @override
-  State<CustomAlarm> createState() => _CustomAlarmState();
-}
+  // static Future<void> callback() async {
+  //   developer.log('Alarm fired!');
+  //   await FlutterRingtonePlayer.play(
+  //     android: AndroidSounds.alarm,
+  //     ios: IosSounds.alarm,
+  //   );
+  //   tz.initializeTimeZones();
+  //   NotificationService()
+  //       .showNotification2(1, 'OneTIme', 'oneShot', 2, 'Remix', 'sds');
+  // }
 
-class _CustomAlarmState extends State<CustomAlarm> {
-  @override
-  void initState() {
-    if (c == 0) {
-      port.listen((message) async => await stopAlarm(message));
-    }
-    c++;
-    super.initState();
-  }
-
-  playRingtone() async {
-    FlutterRingtonePlayer.playAlarm();
-  }
-
-  static SendPort? uiSendPort;
-  int counts = 0;
-  Future<void> stopAlarm(int i) async {
-    developer.log('Increment counter!');
-
-    counts++;
-    createSleeperlyNotification(i);
-    FlutterRingtonePlayer.playAlarm();
-  }
-
-  static Future<void> callback(int i) async {
-    developer.log('Alarm fired! $i');
-    // if (i == 0) {
-    //   developer.log('Alarm stopped!');
-    //   FlutterRingtonePlayer.stop();
-    // } else {
-    //   developer.log('Alarm firingggg');
-    //   FlutterRingtonePlayer.playAlarm();
-    // }
-    // final prefs = await SharedPreferences.getInstance();
-    // final currentCount = prefs.getInt(countKey) ?? 0;
-    // await prefs.setInt('countKey', currentCount + 1);
-    // FlutterRingtonePlayer.playAlarm();
-    // tz.initializeTimeZones();
-    uiSendPort ??= IsolateNameServer.lookupPortByName(isolateName);
-    uiSendPort?.send(i);
-    // NotificationService()
-    //     .showNotification2(1, 'OneTIme', 'oneShot', 2, 'Remix', 'sds');
-  }
-
-  StreamController<List<String>> streams = StreamController<List<String>>();
   @override
   Widget build(BuildContext context) {
+    StreamController<List<String>> streams = StreamController<List<String>>();
     List<String> selectedringtone = [];
-    List<String> listdays = widget.days;
+    List<String> listdays = days;
     List<String> listRingtone = [];
-    List<String> listSwitch = widget.switchSelected;
+    List<String> listSwitch = switchSelected;
     List<String> listTime = [];
-    String listRandom = widget.randomSelected;
+    String listRandom = randomSelected;
     List<List<dynamic>> randomNum = [];
     _loaddays() async {
       final prefs = await SharedPreferences.getInstance();
@@ -101,7 +57,7 @@ class _CustomAlarmState extends State<CustomAlarm> {
 
     _loadtime() async {
       final prefs = await SharedPreferences.getInstance();
-      widget.time = prefs.getStringList('time') ?? [];
+      time = prefs.getStringList('time') ?? [];
     }
 
     _loadRingtone() async {
@@ -152,8 +108,8 @@ class _CustomAlarmState extends State<CustomAlarm> {
                     String timePicked = getformattedTime(picked);
                     print(timePicked);
                     final prefs = await SharedPreferences.getInstance();
-                    widget.time.add(timePicked);
-                    prefs.setStringList('time', widget.time);
+                    time.add(timePicked);
+                    prefs.setStringList('time', time);
                     listTime = prefs.getStringList('time') ?? [];
                     listdays = prefs.getStringList('days') ?? [];
                     List<Map> mapDays = [];
@@ -179,7 +135,7 @@ class _CustomAlarmState extends State<CustomAlarm> {
 
                     prefs.setStringList('days', listdays);
                     selectedringtone = prefs.getStringList('ringtone') ?? [];
-                    selectedringtone.add('alarm');
+                    selectedringtone.add('wakeup');
                     prefs.setStringList('ringtone', selectedringtone);
 
                     listSwitch.clear();
@@ -240,42 +196,22 @@ class _CustomAlarmState extends State<CustomAlarm> {
                     //   exact: true,
                     //   wakeup: true,
                     // );
-                    int days = DateTime.now().day;
-                    int minutesss = (listTime[listSwitch.length - 1][2] != ':'
-                        ? int.parse((listTime[listSwitch.length - 1][2] +
-                            listTime[listSwitch.length - 1][3]))
-                        : int.parse((listTime[listSwitch.length - 1][3]) +
-                            (listTime[listSwitch.length - 1][4])));
-                    print("minutes: $minutesss");
-                    print("hour: ${DateTime.now().minute}");
-                    if (minutesss <= DateTime.now().minute) {
-                      if (days == 7) {
-                        days = 0;
-                      }
-                      days++;
-                      print("days now: ${DateTime.now().day}");
-                      print("days: $days");
-                    }
-                    int i = 1;
-                    await AndroidAlarmManager.oneShotAt(
-                        DateTime(
-                            DateTime.now().year,
-                            DateTime.now().month,
-                            days,
-                            hour1,
-                            listTime[listSwitch.length - 1][2] != ':'
-                                ? int.parse((listTime[listSwitch.length - 1]
-                                        [2] +
-                                    listTime[listSwitch.length - 1][3]))
-                                : int.parse((listTime[listSwitch.length - 1]
-                                        [3]) +
-                                    (listTime[listSwitch.length - 1][4])),
-                            0),
-                        randomList[randomList.length - 1],
-                        callback,
-                        exact: true,
-                        wakeup: true);
-
+                    // AndroidAlarmManager.periodic(
+                    //     const Duration(seconds: 60), 1, callback,
+                    //     startAt: DateTime(
+                    //         DateTime.now().year,
+                    //         DateTime.now().month,
+                    //         hour1,
+                    //         listTime[0][2] != ':'
+                    //             ? int.parse((listTime[listSwitch.length - 1]
+                    //                     [2] +
+                    //                 listTime[listSwitch.length - 1][3]))
+                    //             : int.parse((listTime[listSwitch.length - 1]
+                    //                     [3]) +
+                    //                 (listTime[listSwitch.length - 1][4])),
+                    //         0),
+                    //     exact: true,
+                    //     wakeup: true);
                     print(listSwitch.length - 1);
                     print(hour1);
 
@@ -285,19 +221,19 @@ class _CustomAlarmState extends State<CustomAlarm> {
                     //     : print(int.parse((listTime[listSwitch.length - 1][3]) +
                     //         (listTime[listSwitch.length - 1][4])));
 
-                    // await NotificationService().showNotification(
-                    //     randomList[randomList.length - 1],
-                    //     'Hello',
-                    //     "Hello World",
-                    //     hour1,
-                    //     listTime[listSwitch.length - 1][2] != ':'
-                    //         ? int.parse((listTime[listSwitch.length - 1][2] +
-                    //             listTime[listSwitch.length - 1][3]))
-                    //         : int.parse((listTime[listSwitch.length - 1][3]) +
-                    //             (listTime[listSwitch.length - 1][4])),
-                    //     0,
-                    //     'alarm',
-                    //     'channel 8');
+                    await NotificationService().showNotification(
+                        randomList[randomList.length - 1],
+                        'Hello',
+                        "Hello World",
+                        hour1,
+                        listTime[listSwitch.length - 1][2] != ':'
+                            ? int.parse((listTime[listSwitch.length - 1][2] +
+                                listTime[listSwitch.length - 1][3]))
+                            : int.parse((listTime[listSwitch.length - 1][3]) +
+                                (listTime[listSwitch.length - 1][4])),
+                        0,
+                        'alarm',
+                        '$randomNum');
                   }
                 }),
           ),
@@ -313,9 +249,9 @@ class _CustomAlarmState extends State<CustomAlarm> {
           _loadSwitch();
           _loadRandom();
 
-          streams.sink.add(widget.time);
+          streams.sink.add(time);
           return AlarmList(
-            time: widget.time,
+            time: time,
             days: listdays,
             ringtone: listRingtone,
             switchSelected: listSwitch,

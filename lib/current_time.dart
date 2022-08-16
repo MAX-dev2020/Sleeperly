@@ -1,13 +1,9 @@
 import 'dart:async';
 import 'dart:math';
 import 'dart:ui';
-import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
-import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:sleeperly/Themes/theme_time.dart';
 import 'package:sleeperly/custom_alarm.dart';
 import 'package:sleeperly/drawer.dart';
-import 'package:sleeperly/main.dart';
-import 'package:sleeperly/services/awesome_notifications.dart';
 import 'package:sleeperly/services/notification_service.dart';
 import 'package:sleeperly/sleepcycle.dart';
 import 'package:flutter/material.dart';
@@ -43,50 +39,6 @@ class _CurrentTimeState extends State<CurrentTime> {
     _loadSwitch();
     _loadRandomId();
     _loadgetSetHours();
-    AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
-      if (!isAllowed) {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Allow Notifications'),
-            content: const Text('Our app would like to send you notifications'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text(
-                  'Don\'t Allow',
-                  style: TextStyle(color: Colors.grey, fontSize: 18),
-                ),
-              ),
-              TextButton(
-                onPressed: () {
-                  AwesomeNotifications()
-                      .requestPermissionToSendNotifications()
-                      .then((_) => Navigator.pop(context));
-                },
-                child: const Text(
-                  'Allow',
-                  style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold),
-                ),
-              ),
-            ],
-          ),
-        );
-      }
-    });
-    AwesomeNotifications().actionStream.listen((event) async {
-      final prefs = await SharedPreferences.getInstance();
-      int currentNotificationNumber =
-          prefs.getInt('currentnotificationnumber') ?? 0;
-      print('currentNotificationNumber: $currentNotificationNumber');
-      FlutterRingtonePlayer.stop();
-      AndroidAlarmManager.cancel(currentNotificationNumber);
-    });
   }
 
   _loadIndex() async {
@@ -158,7 +110,6 @@ class _CurrentTimeState extends State<CurrentTime> {
                     if (!snapshot.hasData) {
                       return const Text("Loading.....");
                     }
-
                     return Padding(
                       padding: const EdgeInsets.all(20.0),
                       child: Text(
@@ -186,7 +137,7 @@ class _CurrentTimeState extends State<CurrentTime> {
                   color: Colors.black,
                   image: DecorationImage(
                     image: int.parse(
-                                TimeOfDay.now().toString().substring(10, 12)) <
+                                TimeOfDay.now().toString().substring(10, 11)) <
                             19
                         ? background
                         : background2,
@@ -216,17 +167,15 @@ class _CurrentTimeState extends State<CurrentTime> {
                     random = randomObj.nextInt(100);
                     List listSetHours = sleepCycle(setHours) ?? [];
                     if (listSetHours.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                            'Come back later',
-                            style: TextStyle(
-                                fontFamily: 'Montserrat', color: Colors.black),
-                          ),
-                          duration: Duration(seconds: 2),
-                          backgroundColor: Colors.white,
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text(
+                          'Come back later',
+                          style: TextStyle(
+                              fontFamily: 'Montserrat', color: Colors.black),
                         ),
-                      );
+                        duration: Duration(seconds: 2),
+                        backgroundColor: Colors.white,
+                      ));
                     } else {
                       print(
                           'hours [${listSetHours[0]}] minutes [${listSetHours[1]}]');
@@ -277,7 +226,7 @@ class _CurrentTimeState extends State<CurrentTime> {
                     minimumSize: const Size(100, 40), //////// HERE
                   ),
                   onPressed: () {
-                    FlutterRingtonePlayer.stop();
+                    NotificationService().cancelNotification(0);
                     const Text('Cancel Alarm');
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                       content: Text(

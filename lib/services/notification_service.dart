@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
@@ -5,6 +7,7 @@ import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
 
 class NotificationService {
+  int insistentFlag = 4;
   static final NotificationService _notificationService =
       NotificationService._internal();
 
@@ -96,6 +99,10 @@ class NotificationService {
           icon: '@drawable/ic_stat_sleeping',
           color: Colors.black,
           sound: RawResourceAndroidNotificationSound(ringtone),
+          playSound: true,
+          additionalFlags: Int32List.fromList(
+            <int>[insistentFlag],
+          ),
         ),
 
         // iOS details
@@ -186,17 +193,16 @@ class NotificationService {
 
       NotificationDetails(
         // Android details
-        android: AndroidNotificationDetails(
-          channelId, 'Main Channel3',
-          channelDescription: "Monish",
-          importance: Importance.max,
-          priority: Priority.max,
-          fullScreenIntent: true,
-          icon: '@drawable/ic_stat_sleeping',
-          color: Colors.black,
-
-          // sound: RawResourceAndroidNotificationSound(ringtone)
-        ),
+        android: AndroidNotificationDetails(channelId, 'Main Channel3',
+            channelDescription: "Monish",
+            importance: Importance.max,
+            priority: Priority.max,
+            fullScreenIntent: true,
+            icon: '@drawable/ic_stat_sleeping',
+            color: Colors.black,
+            playSound: true
+            // sound: RawResourceAndroidNotificationSound(ringtone)
+            ),
 
         // iOS details
         iOS: const IOSNotificationDetails(

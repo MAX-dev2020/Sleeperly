@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-
+import 'alarm_list.dart';
 import 'package:sleeperly/Themes/dialogtheme.dart';
 import 'package:sleeperly/Themes/theme_time.dart';
 import 'package:sleeperly/current_time.dart';
@@ -9,6 +9,8 @@ import 'package:sleeperly/dialogs/ringtones.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+String timePicked = '00:00';
 
 class CustomAlarmSettings extends StatefulWidget {
   String time;
@@ -146,78 +148,78 @@ class _CustomAlarmSettingsState extends State<CustomAlarmSettings> {
               color: Color.fromARGB(255, 255, 255, 255),
             ),
           ),
-          InkWell(
-            onTap: () async {
-              getRingtone();
-              showDialog(
-                  context: context,
-                  builder: (context) {
-                    return Theme(
-                        data: buildDialogTheme(),
-                        child: RingtonesDialog(
-                          ringtoneList: selectedringtone,
-                          ringtone: selectedringtone[widget.index],
-                          index: widget.index,
-                        ));
-                  }).then((value) {
-                FlutterRingtonePlayer.stop();
-              });
-              final prefs = await SharedPreferences.getInstance();
-              List<String> select = prefs.getStringList('ringtone') ?? [];
-              FlutterRingtonePlayer.play(
-                  fromAsset: "assets/Ringtones/${select[widget.index]}.mp3",
-                  looping: false,
-                  asAlarm: true);
-              print(selectedringtone.length);
-            },
-            child: Align(
-              alignment: Alignment.topLeft,
-              child: Column(
-                children: [
-                  Row(
-                    children: const [
-                      Padding(
-                        padding: EdgeInsets.only(left: 20),
-                        child: Icon(
-                          Icons.music_note_outlined,
-                          color: Colors.white,
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(left: 20),
-                        child: Text(
-                          'Ringtone',
-                          style: TextStyle(
-                              fontSize: 40,
-                              fontFamily: 'Montserrat',
-                              color: Colors.white),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const Align(
-                    alignment: Alignment.topLeft,
-                    child: Padding(
-                      padding: EdgeInsets.only(left: 40, top: 10),
-                      child: Text(
-                        'Select ringtone for alarm',
-                        style: TextStyle(
-                            fontSize: 20,
-                            fontFamily: 'Montserrat',
-                            color: Colors.white),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const Padding(
-            padding: EdgeInsets.only(top: 10, bottom: 10),
-            child: Divider(
-              color: Color.fromARGB(255, 255, 255, 255),
-            ),
-          ),
+          // InkWell(
+          //   onTap: () async {
+          //     getRingtone();
+          //     showDialog(
+          //         context: context,
+          //         builder: (context) {
+          //           return Theme(
+          //               data: buildDialogTheme(),
+          //               child: RingtonesDialog(
+          //                 ringtoneList: selectedringtone,
+          //                 ringtone: selectedringtone[widget.index],
+          //                 index: widget.index,
+          //               ));
+          //         }).then((value) {
+          //       FlutterRingtonePlayer.stop();
+          //     });
+          //     final prefs = await SharedPreferences.getInstance();
+          //     List<String> select = prefs.getStringList('ringtone') ?? [];
+          //     FlutterRingtonePlayer.play(
+          //         fromAsset: "assets/Ringtones/${select[widget.index]}.mp3",
+          //         looping: false,
+          //         asAlarm: true);
+          //     print(selectedringtone.length);
+          //   },
+          //   child: Align(
+          //     alignment: Alignment.topLeft,
+          //     child: Column(
+          //       children: [
+          //         Row(
+          //           children: const [
+          //             Padding(
+          //               padding: EdgeInsets.only(left: 20),
+          //               child: Icon(
+          //                 Icons.music_note_outlined,
+          //                 color: Colors.white,
+          //               ),
+          //             ),
+          //             Padding(
+          //               padding: EdgeInsets.only(left: 20),
+          //               child: Text(
+          //                 'Ringtone',
+          //                 style: TextStyle(
+          //                     fontSize: 40,
+          //                     fontFamily: 'Montserrat',
+          //                     color: Colors.white),
+          //               ),
+          //             ),
+          //           ],
+          //         ),
+          //         const Align(
+          //           alignment: Alignment.topLeft,
+          //           child: Padding(
+          //             padding: EdgeInsets.only(left: 40, top: 10),
+          //             child: Text(
+          //               'Select ringtone for alarm',
+          //               style: TextStyle(
+          //                   fontSize: 20,
+          //                   fontFamily: 'Montserrat',
+          //                   color: Colors.white),
+          //             ),
+          //           ),
+          //         ),
+          //       ],
+          //     ),
+          //   ),
+          // ),
+          // const Padding(
+          //   padding: EdgeInsets.only(top: 10, bottom: 10),
+          //   child: Divider(
+          //     color: Color.fromARGB(255, 255, 255, 255),
+          //   ),
+          // ),
           InkWell(
             onTap: () async {
               getRingtone();
@@ -236,12 +238,12 @@ class _CustomAlarmSettingsState extends State<CustomAlarmSettings> {
                 },
               );
               if (picked != null) {
-                String timePicked = getformattedTime(picked);
+                timePicked = getformattedTime(picked);
                 controller.sink.add(timePicked);
-                final prefs = await SharedPreferences.getInstance();
-                List<String> select = prefs.getStringList('time') ?? [];
-                select[widget.index] = timePicked;
-                prefs.setStringList('time', select);
+                // final prefs = await SharedPreferences.getInstance();
+                // List<String> select = prefs.getStringList('time') ?? [];
+                // select[widget.index] = timePicked;
+                // prefs.setStringList('time', select);
               }
             },
             child: Align(
@@ -272,7 +274,7 @@ class _CustomAlarmSettingsState extends State<CustomAlarmSettings> {
                   const Align(
                     alignment: Alignment.topLeft,
                     child: Padding(
-                      padding: EdgeInsets.only(left: 40, top: 10, bottom: 0),
+                      padding: EdgeInsets.only(left: 40, top: 10, bottom: 10),
                       child: Text(
                         'Edit time for alarm',
                         style: TextStyle(
@@ -287,26 +289,33 @@ class _CustomAlarmSettingsState extends State<CustomAlarmSettings> {
             ),
           ),
           const Padding(
-            padding: EdgeInsets.only(top: 10, bottom: 0),
+            padding: EdgeInsets.only(top: 0),
             child: Divider(
               color: Color.fromARGB(255, 255, 255, 255),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(top: 0),
-            child: Container(
-                height: MediaQuery.of(context).size.height * 0.32,
-                width: MediaQuery.of(context).size.width,
-                child: null,
-                decoration: const BoxDecoration(
-                  backgroundBlendMode: BlendMode.clear,
-                  color: Colors.transparent,
-                  image: DecorationImage(
-                    image: AssetImage("images/waves.gif"),
-                    fit: BoxFit.cover,
-                  ),
-                )),
-          )
+
+          Expanded(
+            // your image goes here which will take as much height as possible.
+
+            child: Image.asset(
+              'images/waves.gif',
+              width: MediaQuery.of(context).size.width,
+              fit: BoxFit.cover,
+            ),
+          ),
+          // height: MediaQuery.of(context).size.height,
+          // width: MediaQuery.of(context).size.width,
+          // child: null,
+          // decoration: const BoxDecoration(
+          //   backgroundBlendMode: BlendMode.clear,
+          //   color: Colors.transparent,
+          //   image: DecorationImage(
+          //     image: AssetImage("images/waves.gif"),
+          //     fit: BoxFit.cover,
+          //     alignment: Alignment.topCenter,
+          //   ),
+          // ))
         ],
       ),
     );
