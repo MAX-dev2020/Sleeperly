@@ -149,14 +149,19 @@ class NotificationService {
 
       NotificationDetails(
         // Android details
-        android: AndroidNotificationDetails(channelId, 'Main Channel2',
-            channelDescription: "Monish",
-            importance: Importance.max,
-            priority: Priority.max,
-            fullScreenIntent: true,
-            icon: '@drawable/ic_stat_sleeping',
-            color: Colors.black,
-            sound: RawResourceAndroidNotificationSound(ringtone)),
+        android: AndroidNotificationDetails(
+          channelId,
+          'Main Channel2',
+          channelDescription: "Monish",
+          importance: Importance.max,
+          priority: Priority.max,
+          fullScreenIntent: true,
+          icon: '@drawable/ic_stat_sleeping',
+          color: Colors.black,
+          sound: RawResourceAndroidNotificationSound(ringtone),
+          playSound: true,
+          additionalFlags: Int32List.fromList(<int>[insistentFlag]),
+        ),
 
         // iOS details
         iOS: const IOSNotificationDetails(

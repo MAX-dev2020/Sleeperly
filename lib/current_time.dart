@@ -81,10 +81,12 @@ class _CurrentTimeState extends State<CurrentTime> {
   final StreamController<TimeOfDay> streams = StreamController<TimeOfDay>();
   bool shadow = false;
   TimeOfDay selectedTime = TimeOfDay.now();
+
   AssetImage background = const AssetImage('images/movesun2.gif');
   AssetImage background2 = const AssetImage('images/movemoon2.gif');
   @override
   Widget build(BuildContext context) {
+    String times = TimeOfDay.now().format(context).toString();
     return Scaffold(
       extendBodyBehindAppBar: false,
       endDrawer: NavDrawer(
@@ -136,11 +138,11 @@ class _CurrentTimeState extends State<CurrentTime> {
                   borderRadius: BorderRadius.circular(20),
                   color: Colors.black,
                   image: DecorationImage(
-                    image: int.parse(
-                                TimeOfDay.now().toString().substring(10, 11)) <
-                            19
-                        ? background
-                        : background2,
+                    image:
+                        times.substring(times.length - 2, times.length - 1) ==
+                                'AM'
+                            ? background
+                            : background2,
                     fit: BoxFit.cover,
                   ),
                 ),
