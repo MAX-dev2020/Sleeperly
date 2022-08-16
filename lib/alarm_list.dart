@@ -463,8 +463,11 @@ class _AlarmListState extends State<AlarmList> {
                           final prefs = await SharedPreferences.getInstance();
                           List<String> select =
                               prefs.getStringList('time') ?? [];
-                          select[index] = timePicked;
-                          prefs.setStringList('time', select);
+                          if (timePicked != '00:00') {
+                            select[index] = timePicked;
+                            prefs.setStringList('time', select);
+                          }
+
                           String ringtoneNow = finalRingtone[index];
                           finalDaysMaps = [];
                           for (var element in finalDays) {
