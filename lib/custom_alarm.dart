@@ -1,15 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
-import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
+
 import 'package:sleeperly/alarm_list.dart';
 import 'package:sleeperly/services/notification_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
-import 'package:timezone/timezone.dart' as tz;
-import 'package:timezone/data/latest.dart' as tz;
+
 import 'package:sleeperly/Themes/theme_time.dart';
-import 'dart:developer' as developer;
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 var random = new Random();

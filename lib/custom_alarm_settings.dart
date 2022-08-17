@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
-import 'alarm_list.dart';
+
 import 'package:sleeperly/Themes/dialogtheme.dart';
 import 'package:sleeperly/Themes/theme_time.dart';
-import 'package:sleeperly/current_time.dart';
+
 import 'package:sleeperly/dialogs/days.dart';
-import 'package:sleeperly/dialogs/ringtones.dart';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 String timePicked = '00:00';

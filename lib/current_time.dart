@@ -1,13 +1,12 @@
 import 'dart:async';
 import 'dart:math';
-import 'dart:ui';
-import 'package:sleeperly/Themes/theme_time.dart';
+
 import 'package:sleeperly/custom_alarm.dart';
 import 'package:sleeperly/drawer.dart';
 import 'package:sleeperly/services/notification_service.dart';
 import 'package:sleeperly/sleepcycle.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'dart:developer' as developer;
@@ -87,6 +86,7 @@ class _CurrentTimeState extends State<CurrentTime> {
   @override
   Widget build(BuildContext context) {
     String times = TimeOfDay.now().format(context).toString();
+
     return Scaffold(
       extendBodyBehindAppBar: false,
       endDrawer: NavDrawer(
@@ -139,8 +139,7 @@ class _CurrentTimeState extends State<CurrentTime> {
                   color: Colors.black,
                   image: DecorationImage(
                     image:
-                        times.substring(times.length - 2, times.length - 1) ==
-                                'AM'
+                        times.substring(times.length - 2, times.length) == 'AM'
                             ? background
                             : background2,
                     fit: BoxFit.cover,
