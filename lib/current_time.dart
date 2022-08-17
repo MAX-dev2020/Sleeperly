@@ -107,6 +107,7 @@ class _CurrentTimeState extends State<CurrentTime> {
                   stream: streams.stream,
                   builder: (context, snapshot) {
                     streams.sink.add(TimeOfDay.now());
+
                     String time = snapshot.data.toString();
 
                     if (!snapshot.hasData) {
@@ -138,10 +139,18 @@ class _CurrentTimeState extends State<CurrentTime> {
                   borderRadius: BorderRadius.circular(20),
                   color: Colors.black,
                   image: DecorationImage(
-                    image:
-                        times.substring(times.length - 2, times.length) == 'AM'
-                            ? background
-                            : background2,
+                    image: times.substring(times.length - 2, times.length) ==
+                                'AM' ||
+                            int.parse(TimeOfDay.now()
+                                        .toString()
+                                        .substring(10, 12)) >
+                                    6 &&
+                                int.parse(TimeOfDay.now()
+                                        .toString()
+                                        .substring(10, 12)) <
+                                    18
+                        ? background
+                        : background2,
                     fit: BoxFit.cover,
                   ),
                 ),
