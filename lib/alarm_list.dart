@@ -465,6 +465,7 @@ class _AlarmListState extends State<AlarmList> {
                             select[index] = timePicked;
                             prefs.setStringList('time', select);
                           }
+                          timePicked = '00:00';
 
                           String ringtoneNow = finalRingtone[index];
                           finalDaysMaps = [];
