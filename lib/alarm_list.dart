@@ -499,7 +499,8 @@ class _AlarmListState extends State<AlarmList> {
                           prefs.setString('random', jsonEncode(randomList));
                           List number = [];
                           for (int i = 0; i < 9; i++) {
-                            if (finalDaysMaps[index][day[i]] == true) {
+                            if (finalDaysMaps[index][day[i]] == true &&
+                                i != 1) {
                               await getRandomNum();
                               print("finalDays $finalDays");
                               if (widget.time[index][6] == 'P' ||
