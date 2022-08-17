@@ -104,8 +104,13 @@ class CustomAlarm extends StatelessWidget {
                   if (picked != null) {
                     listTime.clear();
                     String timePicked = getformattedTime(picked);
-                    print(timePicked);
+
                     final prefs = await SharedPreferences.getInstance();
+                    if (timePicked[0] == '0') {
+                      timePicked = timePicked.substring(1);
+                      timePicked = '12' + timePicked;
+                      print(timePicked);
+                    }
                     time.add(timePicked);
                     prefs.setStringList('time', time);
                     listTime = prefs.getStringList('time') ?? [];
