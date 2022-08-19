@@ -2,15 +2,9 @@
 
 A new Flutter project.
 
-## Getting Started
+Sleeperly is an alarm application which has one tap set alarm feature to set alarms based on your sleep cycle.
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
+![alarmvid2gif](https://user-images.githubusercontent.com/60339025/185096331-019edb14-ceaf-4a5d-83df-b78e1c07cc6c.gif)
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+> :warning: **Don't forget to turn on the app notifications and allow sound**: the app uses your local notifications instead of android AlarmManager.
