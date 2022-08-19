@@ -1,12 +1,10 @@
 import 'dart:async';
 import 'dart:math';
-
 import 'package:sleeperly/custom_alarm.dart';
 import 'package:sleeperly/drawer.dart';
 import 'package:sleeperly/services/notification_service.dart';
 import 'package:sleeperly/sleepcycle.dart';
 import 'package:flutter/material.dart';
-
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'dart:developer' as developer;
@@ -73,7 +71,6 @@ class _CurrentTimeState extends State<CurrentTime> {
   _loadgetSetHours() async {
     final prefs = await SharedPreferences.getInstance();
     setHours = prefs.getInt('sethours') ?? 6;
-    print(setHours);
     // prefs.clear();
   }
 

@@ -4,14 +4,11 @@ int n3Stage = 70;
 int n4Stage = 90;
 
 sleepCycle(setTime) {
-  DateTime all = DateTime.now();
   int currHour = DateTime.now().hour;
   int currMinute = DateTime.now().minute;
-
   double setHours = 0;
   int setMinutes = 0;
-  int subTime = 0;
-  print(currHour);
+
   if (currHour > 19 || currHour < 7) {
     if (setTime == 1) {
       int calculatedMins = 0;
@@ -24,7 +21,6 @@ sleepCycle(setTime) {
           int.parse((divDub * 90).toStringAsFixed(0));
       List lists = sleepStages(
           convertSleepCycleIntoMins, setHours, setMinutes, calculatedMins);
-      print(lists);
       return lists;
     } else if (setTime == 2) {
       int calculatedMins = 0;
@@ -37,7 +33,6 @@ sleepCycle(setTime) {
           int.parse((divDub * 90).toStringAsFixed(0));
       List lists = sleepStages(
           convertSleepCycleIntoMins, setHours, setMinutes, calculatedMins);
-      print(lists);
       return lists;
     } else if (setTime == 3) {
       int calculatedMins = 0;
@@ -51,7 +46,6 @@ sleepCycle(setTime) {
           int.parse((divDub * 90).toStringAsFixed(0));
       List lists = sleepStages(
           convertSleepCycleIntoMins, setHours, setMinutes, calculatedMins);
-      print(lists);
       return lists;
     } else if (setTime == 4) {
       int calculatedMins = 0;
@@ -80,7 +74,6 @@ sleepCycle(setTime) {
           int.parse((divDub * 90).toStringAsFixed(0));
       List lists = sleepStages(
           convertSleepCycleIntoMins, setHours, setMinutes, calculatedMins);
-      print(lists);
       return lists;
     } else if (setTime == 6) {
       int calculatedMins = 0;
@@ -95,14 +88,12 @@ sleepCycle(setTime) {
           int.parse((divDub * 90).toStringAsFixed(0));
       List lists = sleepStages(
           convertSleepCycleIntoMins, setHours, setMinutes, calculatedMins);
-      print(lists);
       return lists;
     } else if (setTime == 7) {
       int calculatedMins = 0;
       currHour <= 24 && currHour >= 19
           ? calculatedMins = ((24 - currHour) * 60) - currMinute + 390
           : calculatedMins = 390 - currMinute - currHour * 60;
-      print('calculatedMins: $calculatedMins');
       double div = double.parse((calculatedMins / 90).toStringAsFixed(1));
       double divDub = double.parse(
           (div - int.parse((div.toString()).split('.')[0])).toStringAsFixed(1));
@@ -110,12 +101,10 @@ sleepCycle(setTime) {
           int.parse((divDub * 90).toStringAsFixed(0));
       List lists = sleepStages(
           convertSleepCycleIntoMins, setHours, setMinutes, calculatedMins);
-      print(lists);
       return lists;
     }
   } else {
     List listempty = [];
-    print('its not going to work');
     return listempty;
   }
 }
@@ -127,7 +116,6 @@ sleepCycleMinutes(
   double convertHoursIntoMins = double.parse(
       (setHours - int.parse((setHours.toString()).split('.')[0]))
           .toStringAsFixed(1));
-  print('$convertHoursIntoMins $convertHoursIntoMins');
   if (stage == 'n1Stage') {
     setMinutes = int.parse((convertHoursIntoMins * 60).toStringAsFixed(0));
   } else if (stage == 'n2Stage') {
@@ -148,7 +136,6 @@ sleepCycleMinutes(
 sleepStages(int convertSleepCycleIntoMins, double setHours, int setMinutes,
     int calculatedMins) {
   if (convertSleepCycleIntoMins <= n1Stage) {
-    print('n1Stage');
     setHours = ((calculatedMins / 60));
 
     setMinutes = sleepCycleMinutes(
@@ -165,7 +152,6 @@ sleepStages(int convertSleepCycleIntoMins, double setHours, int setMinutes,
     return listSetHours;
   } else if (convertSleepCycleIntoMins > n1Stage &&
       convertSleepCycleIntoMins <= n2Stage) {
-    print('n2Stage');
     setHours = (calculatedMins / 60);
     setMinutes = sleepCycleMinutes(
         calculatedMins, setHours, "n2Stage", convertSleepCycleIntoMins);
@@ -182,7 +168,6 @@ sleepStages(int convertSleepCycleIntoMins, double setHours, int setMinutes,
     return listSetHours;
   } else if (convertSleepCycleIntoMins > n2Stage &&
       convertSleepCycleIntoMins <= n3Stage) {
-    print('n3Stage');
     setHours = (calculatedMins / 60);
     setMinutes = sleepCycleMinutes(
         calculatedMins, setHours, "n3Stage", convertSleepCycleIntoMins);
@@ -200,7 +185,6 @@ sleepStages(int convertSleepCycleIntoMins, double setHours, int setMinutes,
     return listSetHours;
   } else if (convertSleepCycleIntoMins > n3Stage &&
       convertSleepCycleIntoMins <= n4Stage) {
-    print('n4Stage');
     setHours = (calculatedMins / 60);
     setMinutes = sleepCycleMinutes(
         calculatedMins, setHours, "n4Stage", convertSleepCycleIntoMins);

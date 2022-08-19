@@ -29,8 +29,6 @@ class AlarmList extends StatefulWidget {
 }
 
 class _AlarmListState extends State<AlarmList> {
-  @override
-  bool s = false;
   List<String> latestDays = [];
   List<String> latestDays1 = [];
   List<String> latestRingtone1 = [];
@@ -50,7 +48,7 @@ class _AlarmListState extends State<AlarmList> {
   int randomnumber = 0;
   String times = '';
   List<String> finalTime = [];
-  var item;
+  var item = '';
 
   List<String> day = [
     'Never',
@@ -176,7 +174,6 @@ class _AlarmListState extends State<AlarmList> {
       String convdays = prefs.getString('random') ?? '';
       List convdaysList = jsonDecode(convdays);
       convdaysList.insert(index, num);
-      print(convdaysList);
       prefs.setString('random', jsonEncode(convdaysList));
     }
 
@@ -198,7 +195,6 @@ class _AlarmListState extends State<AlarmList> {
     _loadRingtone() async {
       final prefs = await SharedPreferences.getInstance();
       finalRingtone = prefs.getStringList('ringtone') ?? [];
-      print("finalRingtone $finalRingtone");
     }
 
     bool isSwitchEnabled(int index) {
@@ -209,20 +205,8 @@ class _AlarmListState extends State<AlarmList> {
           return true;
         }
       } catch (e) {
-        print("wrong");
         return false;
       }
-    }
-
-    String getRingtones(int index) {
-      String values = '';
-      try {
-        values = finalRingtone[index];
-      } catch (e) {
-        values = 'wakeup';
-      }
-
-      return values;
     }
 
     setSwitch() async {
@@ -235,7 +219,6 @@ class _AlarmListState extends State<AlarmList> {
       int count = 0;
       for (int i = 0; i < 9; i++) {
         if (finalDaysMaps[index][day[i]] == true) {
-          print("finalDays $finalDays");
           if (widget.time[index][6] == 'P' || widget.time[index][5] == 'P') {
             if (int.parse(widget.time[index].split(':')[0]) == 12) {
               hour = int.parse(widget.time[index].split(':')[0]);
@@ -323,7 +306,6 @@ class _AlarmListState extends State<AlarmList> {
                             );
                           });
                           prefs.setStringList('days', latestDays);
-                          print("latestdays ${latestDays.length}");
                           widget.days = prefs.getStringList('days') ?? [];
                           finalDays = widget.days;
 
@@ -336,7 +318,6 @@ class _AlarmListState extends State<AlarmList> {
                             );
                           });
                           prefs.setStringList('ringtone', latestRingtone);
-                          print("latestringtone ${latestRingtone}");
                           widget.ringtone =
                               prefs.getStringList('ringtone') ?? [];
 
@@ -352,8 +333,6 @@ class _AlarmListState extends State<AlarmList> {
                           prefs.setStringList('switch', latestSwitchSelected);
                           widget.switchSelected =
                               prefs.getStringList('switch') ?? [];
-                          print("latestswitch ${widget.switchSelected}");
-
                           latestRandom = prefs.getString('random') ?? '';
                           List randomList = json.decode(latestRandom);
                           setState(() {
@@ -364,7 +343,6 @@ class _AlarmListState extends State<AlarmList> {
                           });
                           prefs.setString('random', jsonEncode(randomList));
                           widget.randomId = prefs.getString('random') ?? '';
-                          print("latestrandom ${widget.randomId}");
                           for (int i = 0; i < randomList[index].length; i++) {
                             NotificationService()
                                 .cancelNotification(randomList[index][i]);
@@ -390,7 +368,6 @@ class _AlarmListState extends State<AlarmList> {
                     });
 
                     prefs.setStringList('ringtone', latestRingtone1);
-                    print("latestringtone ${latestRingtone1}");
                     widget.ringtone = prefs.getStringList('ringtone') ?? [];
 
                     latestDays1 = prefs.getStringList('days') ?? [];
@@ -402,15 +379,10 @@ class _AlarmListState extends State<AlarmList> {
                     setState(() {
                       mapdays1.removeAt(index);
                     });
-
-                    print("time ${widget.time.length}");
-                    print("mapdays ${mapdays1.length}");
-
                     List<String> convdays1 = [];
                     for (var element in mapdays1) {
                       convdays1.add(json.encode(element));
                     }
-                    print("$convdays1");
                     prefs.setStringList('days', convdays1);
                     widget.days = prefs.getStringList('days') ?? [];
                     finalDays = widget.days;
@@ -423,20 +395,17 @@ class _AlarmListState extends State<AlarmList> {
 
                     prefs.setStringList('switch', latestSwitchSelected1);
                     widget.switchSelected = prefs.getStringList('switch') ?? [];
-                    print("latestswitch ${latestSwitchSelected1}");
 
                     latestRandom1 = prefs.getString('random') ?? '';
-                    print("latestRandom1 $latestRandom1");
+
                     List randomList = jsonDecode(latestRandom1);
                     oldId = randomList[index];
                     setState(() {
                       randomList.removeAt(index);
                     });
-                    print("randomList ${randomList}");
 
                     prefs.setString('random', jsonEncode(randomList));
                     widget.randomId = prefs.getString('random') ?? '';
-                    print("latestrandomdsf ${widget.randomId}");
 
                     NotificationService().cancelNotification(id);
                     ScaffoldMessenger.of(context).showSnackBar(snackbar);
@@ -446,7 +415,6 @@ class _AlarmListState extends State<AlarmList> {
                     child: InkWell(
                       splashColor: Colors.white,
                       onTap: () {
-                        print("index $index");
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -473,36 +441,26 @@ class _AlarmListState extends State<AlarmList> {
                             finalDaysMaps.add(json.decode(element));
                           }
                           await _loadtime();
-                          for (int i = 0; i < 9; i++) {
-                            print(finalDaysMaps[index][day[i]]);
-                          }
-                          print("index $index");
 
                           String convdays = prefs.getString('random') ?? '';
                           List randomList = jsonDecode(convdays);
-                          print("randomListdf ${randomList}");
                           if (randomList[index].isNotEmpty) {
                             for (int i = 0; i < randomList[index].length; i++) {
                               NotificationService()
                                   .cancelNotification(randomList[index][i]);
-                              print("canceled");
                             }
                           } else {
                             _loadRandom(index, 0);
                             NotificationService().cancelNotification(id);
-                            print("canceled");
                           }
 
                           randomList.removeAt(index);
-
-                          print("randomList2 ${randomList}");
                           prefs.setString('random', jsonEncode(randomList));
                           List number = [];
                           for (int i = 0; i < 9; i++) {
                             if (finalDaysMaps[index][day[i]] == true &&
                                 i != 1) {
                               await getRandomNum();
-                              print("finalDays $finalDays");
                               if (widget.time[index][6] == 'P' ||
                                   widget.time[index][5] == 'P') {
                                 if (int.parse(
@@ -525,7 +483,6 @@ class _AlarmListState extends State<AlarmList> {
                                       widget.time[index].split(':')[0]);
                                 }
                               }
-                              print("ringtoneNow $ringtoneNow");
                               await NotificationService().showNotification(
                                   randomnumber,
                                   'Hello',
@@ -588,7 +545,6 @@ class _AlarmListState extends State<AlarmList> {
                                       widget.switchSelected[index] =
                                           value.toString();
                                       setSwitch();
-                                      print("index ${index}");
                                     });
                                     if (!value) {
                                       final prefs =
@@ -602,9 +558,7 @@ class _AlarmListState extends State<AlarmList> {
                                         NotificationService()
                                             .cancelNotification(
                                                 randomList[index][i]);
-                                        print("cancelled");
                                       }
-                                      // AndroidAlarmManager.cancel(1);
                                     } else {
                                       _loadRingtone();
                                       String ringtoneNow = finalRingtone[index];
@@ -614,20 +568,6 @@ class _AlarmListState extends State<AlarmList> {
                                 ),
                               ),
                             ),
-                            // Padding(
-                            //   padding: const EdgeInsets.only(
-                            //       left: 30, right: 10, bottom: 10),
-                            //   child: Align(
-                            //     alignment: Alignment.topLeft,
-                            //     child: Text(
-                            //       getRingtones(index),
-                            //       style: const TextStyle(
-                            //           color: Color.fromARGB(255, 255, 255, 255),
-                            //           fontSize: 13,
-                            //           fontFamily: 'Montserrat'),
-                            //     ),
-                            //   ),
-                            // ),
                           ],
                         ),
                       ),

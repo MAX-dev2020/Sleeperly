@@ -65,7 +65,6 @@ class NotificationService {
         scheduledDate = scheduledDate.add(const Duration(days: 1));
       }
     }
-    print(scheduledDate);
     return scheduledDate;
   }
 
@@ -140,7 +139,6 @@ class NotificationService {
     String ringtone,
     String channelId,
   ) async {
-    print(hour);
     await flutterLocalNotificationsPlugin.zonedSchedule(
       id,
       title,
@@ -189,7 +187,6 @@ class NotificationService {
     String ringtone,
     String channelId,
   ) async {
-    print(seconds);
     await flutterLocalNotificationsPlugin.zonedSchedule(
       id,
       title,

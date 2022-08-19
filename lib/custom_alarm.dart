@@ -1,13 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
-
 import 'package:sleeperly/alarm_list.dart';
 import 'package:sleeperly/services/notification_service.dart';
 import 'package:flutter/material.dart';
-
 import 'package:sleeperly/Themes/theme_time.dart';
-
 import 'package:shared_preferences/shared_preferences.dart';
 
 var random = new Random();
@@ -25,18 +22,6 @@ class CustomAlarm extends StatelessWidget {
       required this.switchSelected,
       required this.randomSelected})
       : super(key: key);
-
-  // static Future<void> callback() async {
-  //   developer.log('Alarm fired!');
-  //   await FlutterRingtonePlayer.play(
-  //     android: AndroidSounds.alarm,
-  //     ios: IosSounds.alarm,
-  //   );
-  //   tz.initializeTimeZones();
-  //   NotificationService()
-  //       .showNotification2(1, 'OneTIme', 'oneShot', 2, 'Remix', 'sds');
-  // }
-
   @override
   Widget build(BuildContext context) {
     StreamController<List<String>> streams = StreamController<List<String>>();
@@ -109,7 +94,6 @@ class CustomAlarm extends StatelessWidget {
                     if (timePicked[0] == '0') {
                       timePicked = timePicked.substring(1);
                       timePicked = '12' + timePicked;
-                      print(timePicked);
                     }
                     time.add(timePicked);
                     prefs.setStringList('time', time);
@@ -130,7 +114,6 @@ class CustomAlarm extends StatelessWidget {
                       'Saturday': false,
                       'Sunday': false,
                     });
-                    int anyTrue = 0;
                     listdays.clear();
                     for (var element in mapDays) {
                       listdays.add(jsonEncode(element));
@@ -155,7 +138,6 @@ class CustomAlarm extends StatelessWidget {
                     int num = random.nextInt(100);
                     randomNum = [];
 
-                    print("randomList custom $randomList");
                     for (int i = 0; i < randomList.length; i++) {
                       randomNum.add(randomList[i]);
                     }
@@ -189,41 +171,6 @@ class CustomAlarm extends StatelessWidget {
                             listTime[listSwitch.length - 1].split(':')[0]);
                       }
                     }
-                    print("randomNum: $randomNum");
-
-                    // await AndroidAlarmManager.oneShot(
-                    //   const Duration(seconds: 5),
-                    //   // Ensure we have a unique alarm ID.
-                    //   1,
-                    //   callback,
-                    //   exact: true,
-                    //   wakeup: true,
-                    // );
-                    // AndroidAlarmManager.periodic(
-                    //     const Duration(seconds: 60), 1, callback,
-                    //     startAt: DateTime(
-                    //         DateTime.now().year,
-                    //         DateTime.now().month,
-                    //         hour1,
-                    //         listTime[0][2] != ':'
-                    //             ? int.parse((listTime[listSwitch.length - 1]
-                    //                     [2] +
-                    //                 listTime[listSwitch.length - 1][3]))
-                    //             : int.parse((listTime[listSwitch.length - 1]
-                    //                     [3]) +
-                    //                 (listTime[listSwitch.length - 1][4])),
-                    //         0),
-                    //     exact: true,
-                    //     wakeup: true);
-                    print(listSwitch.length - 1);
-                    print(hour1);
-
-                    // listTime[0][2] != ':'
-                    //     ? print(int.parse((listTime[listSwitch.length - 1][2] +
-                    //         listTime[listSwitch.length - 1][3])))
-                    //     : print(int.parse((listTime[listSwitch.length - 1][3]) +
-                    //         (listTime[listSwitch.length - 1][4])));
-
                     await NotificationService().showNotification(
                         randomList[randomList.length - 1],
                         'Hello',
@@ -251,7 +198,6 @@ class CustomAlarm extends StatelessWidget {
           _loadRingtone();
           _loadSwitch();
           _loadRandom();
-
           streams.sink.add(time);
           return AlarmList(
             time: time,
