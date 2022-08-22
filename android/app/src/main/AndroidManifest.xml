@@ -9,7 +9,7 @@
 
         android:label="sleeperly"
         android:name="${applicationName}"
-        android:icon="@drawable/ic_stat_sleeping">
+        android:icon="@mipmap/sleepicon">
 
         
         <activity
