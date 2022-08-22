@@ -173,8 +173,8 @@ class CustomAlarm extends StatelessWidget {
                     }
                     await NotificationService().showNotification(
                         randomList[randomList.length - 1],
-                        'Hello',
-                        "Hello World",
+                        'Hey! Wake up!',
+                        "It's time to wake up!",
                         hour1,
                         listTime[listSwitch.length - 1][2] != ':'
                             ? int.parse((listTime[listSwitch.length - 1][2] +
@@ -184,6 +184,12 @@ class CustomAlarm extends StatelessWidget {
                         0,
                         'alarm',
                         '$randomNum');
+                    print(hour1);
+                    print(listTime[listSwitch.length - 1][2] != ':'
+                        ? int.parse((listTime[listSwitch.length - 1][2] +
+                            listTime[listSwitch.length - 1][3]))
+                        : int.parse((listTime[listSwitch.length - 1][3]) +
+                            (listTime[listSwitch.length - 1][4])));
                   }
                 }),
           ),
